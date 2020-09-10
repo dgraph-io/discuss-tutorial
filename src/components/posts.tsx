@@ -123,7 +123,7 @@ export function PostFeed() {
                 </Label>
               );
             }
-            return;
+            return " "
           })}
         </Table.Cell>
         <Table.Cell>
