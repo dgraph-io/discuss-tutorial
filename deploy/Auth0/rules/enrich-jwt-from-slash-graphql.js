@@ -48,24 +48,28 @@ function enrichJWTFromSlashGraphQL(user, context, callback) {
 
       client
         .request(getLoggedInUser, { username: user.email })
-        .then((data, err) => {
-          // console.log(data)
-          const hasAdminRole = !!(
-            data &&
-            data.getUser &&
-            data.getUser.roles.find(
-              (p) => (p.role === "ADMINISTRATOR" && !p.forCategory)
+        .then((data, error) => {
+          if (error) {
+            callback(error, user, context)
+          } else {
+            // console.log(data)
+            const hasAdminRole = !!(
+              data &&
+              data.getUser &&
+              data.getUser.roles.find(
+                (p) => p.role === "ADMINISTRATOR" && !p.forCategory
+              )
             )
-          )
-          context.idToken[namespace].role = hasAdminRole ? "Admin" : "User"
+            context.idToken[namespace].role = hasAdminRole ? "Admin" : "User"
 
-          callback(err, user, context)
+            callback(null, user, context)
+          }
         })
         .catch((error) => {
           callback(error, user, context)
         })
     })
-    .catch(function (error) {
+    .catch((error) => {
       callback(error, user, context)
     })
 }

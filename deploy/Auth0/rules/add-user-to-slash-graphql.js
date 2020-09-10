@@ -48,26 +48,28 @@ function addUserToSlashGraphQL(user, context, callback) {
 
       client
         .request(findUser, { username: user.email })
-        .then((data, err) => {
-          if (data && data.getUser && data.getUser.username === user.email) {
+        .then((data, error) => {
+          if (error) {
+            callback(error, user, context)
+          } else if (data && data.getUser && data.getUser.username) {
             // The user is already in Slash GraphQL
-            callback(err, user, context)
+            callback(null, user, context)
+          } else {
+            client
+              .request(addUser, { username: user.email })
+              .then((data, error) => {
+                callback(error, user, context)
+              })
+              .catch((error) => {
+                callback(error, user, context)
+              })
           }
-
-          client
-            .request(addUser, { username: user.email })
-            .then((data, error) => {
-              callback(error, user, context)
-            })
-            .catch((error) => {
-              callback(error, user, context)
-            })
         })
         .catch((error) => {
           callback(error, user, context)
         })
     })
-    .catch(function (error) {
+    .catch((error) => {
       callback(error, user, context)
     })
 }
