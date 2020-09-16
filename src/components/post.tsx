@@ -128,7 +128,7 @@ export function Post() {
 
   const paras = data.getPost.text
     .split("\n")
-    .map((str) => <p key={str}>{str}</p>);
+    .map((str) => <p key={str}>{str}<br /></p>);
 
   const updatePost = () => {
     setEditPost(false);
