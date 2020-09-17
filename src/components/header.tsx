@@ -9,7 +9,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   useGetUserQuery,
   useUpdateUserMutation,
@@ -41,6 +41,8 @@ export function AppHeader() {
     isAuthenticated,
     getIdTokenClaims,
   } = useAuth0();
+
+  const location = useLocation()
 
   const { data, loading, error } = useGetUserQuery({
     variables: { username: isAuthenticated ? user.email : "" },
@@ -301,7 +303,7 @@ export function AppHeader() {
     </span>
   ) : (
     <span>
-      <Button className="dgraph-btn" onClick={() => loginWithRedirect()}>
+      <Button className="dgraph-btn" onClick={() => loginWithRedirect({ redirect_uri: location })}>
         Log In
       </Button>
     </span>
