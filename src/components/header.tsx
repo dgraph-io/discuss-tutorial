@@ -301,7 +301,7 @@ export function AppHeader() {
     </span>
   ) : (
     <span>
-      <Button className="dgraph-btn" onClick={() => loginWithRedirect({ returnTo: window.location.href })}>
+      <Button className="dgraph-btn" onClick={() => loginWithRedirect({ redirect_uri: window.location.href })}>
         Log In
       </Button>
     </span>
