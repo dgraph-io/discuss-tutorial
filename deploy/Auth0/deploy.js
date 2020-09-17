@@ -1,6 +1,12 @@
 const ManagementClient = require("auth0").ManagementClient
 const { readFileSync } = require("fs")
-require("dotenv").config()
+
+// NODE_ENV=production yarn run deploy-auth0
+// or
+// yarn run --prod deploy-auth0
+const env = process.env.NODE_ENV ? process.env.NODE_ENV : "development"
+require("dotenv").config({ path: ".env." + env })
+const configFile = "config." + env + ".json"
 
 const dir = "deploy/Auth0"
 
@@ -96,7 +102,7 @@ function rules(management, config) {
   addOrUpdateRule(management, config, "enrich-jwt-from-slash-graphql")
 }
 
-var config = JSON.parse(readFileSync(dir + "/config.json", "utf8"))
+var config = JSON.parse(readFileSync(dir + "/" + configFile, "utf8"))
 config.SLASH_GRAPHQL_ENDPOINT = process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT
 
 var management = new ManagementClient({
