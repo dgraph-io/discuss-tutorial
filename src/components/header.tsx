@@ -9,7 +9,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   useGetUserQuery,
   useUpdateUserMutation,
