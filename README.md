@@ -1,38 +1,35 @@
-Discuss clone in Dgraph GraphQL
+Discuss clone powered by Slash GraphQL
 
-This app is intended to show off Dgraph quick start, and integration with Auth0.  
+This app is was built as part of a tutorial on building apps with Slash GraphQL
+
+![App Screenshot](./discuss-app-screenshot.png)
+
+![App Screenshot](./discuss-app-post-screenshot.png)
+
+# How it was built
+
+There's a [blog about starting to build](https://dgraph.io/blog/post/slash-graphql-app-setup/) this app.
+
+And a tutorial on the way (see also https://dgraph.io/docs/)
 
 # Running 
 
-To run, you just need to get the Dgraph GraphQL backend running with
+Following the tutorial, you can build your own app using Slash GraphQL.  This repo contains the code that's deployed with Netlify at https://slash-graphql-discuss.netlify.app/.  You can use that version of the app like a production build - you can view posts without signing up, or sign up and add your own posts and comments. 
 
-```sh
-./deploy/dev-setup/run.sh up
-```
+If you want to run this app with your own GraphQL backend, then you need to deploy Slash GraphQL backends as per the tutorial.
 
-That brings up Dgraph in a docker container and adds the seed data.
+If you just want to take this code for a spin, then there's two GraphQL instances used for building this app
 
-Then
+* a development instance at https://discuss-dev.us-west-2.aws.cloud.dgraph.io/graphql, and
+* a production instance at https://dgraph-discuss.us-west-2.aws.cloud.dgraph.io/graphql (this is the instance behind https://slash-graphql-discuss.netlify.app/).
+
+The `.env.development` and `.env.production` files give the details of the GraphQL backends and Auth0 app.
+
+Running
 
 ```
 yarn install
 yarn start
 ```
 
-Brings up the React app.
-
-# How it was built
-
-There's a blog about building this app (FIXME: insert link)
-
-Basic setup:
-
-```
-npx create-react-app discuss-clone --template typescript
-
-yarn add graphql @apollo/client react-router-dom
-
-yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo @graphql-codegen/add @graphql-codegen/near-operation-file-preset
-
-yarn add -D @types/react-router-dom
-```
+Brings up the React app pointed at the development backend, or swap out with the production server to run locally pointed at the production server.
