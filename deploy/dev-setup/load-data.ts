@@ -5,6 +5,8 @@ import {
   AddCategoryInput,
   AddPostInput,
   AddUserInput,
+  PermissionRef,
+  Role
 } from "../../src/types/graphql"
 import {
   InitCategoriesMutation,
@@ -15,44 +17,48 @@ import {
   InitPostsDocument,
 } from "./types/operations"
 import { lorem } from 'faker';
+import { title } from "process"
+
+require("dotenv").config()
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: "http://localhost:8080/graphql",
+    uri: process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT + '/graphql',
     fetch: fetch,
   }),
 })
 
-const categories: Array<AddCategoryInput> = [
-  { name: "GraphQL" },
-  { name: "Dgraph" },
-  { name: "React" },
-  { name: "Movies" },
-]
-
 const diggy: AddUserInput = {
-  username: "diggy",
+  username: "diggy@dgraph.io",
   displayName: "Diggy",
   avatarImg: "/diggy.png",
 }
 
 const michael: AddUserInput = {
-  username: "michael",
+  username: "michael@dgraph.io",
   displayName: "Michael",
-  avatarImg: "/michael.png",
+  // roles: [ { role: Role.Administrator } ]
 }
 
-const virat: AddUserInput = {
-  username: "virat",
-  displayName: "Virat",
-}
+// const apoorv: AddUserInput = {
+//   username: "apoorv@dgraph.io",
+//   displayName: "Michael",
+//   roles: [ { role: Role.Administrator } ]
+// }
 
-const anushka: AddUserInput = {
-  username: "anushka",
-  displayName: "Anushka",
-}
+const stdAdmins: PermissionRef[] = [
+  { role: Role.Administrator, user: { username: "michael@dgraph.io" } },
+  // { role: Role.Administrator, user: { username: "apoorv@dgraph.io" } } 
+]
 
+const categories: Array<AddCategoryInput> = [
+  { name: "General", isPublic: true, permissions: stdAdmins },
+  { name: "GraphQL", isPublic: true, permissions: stdAdmins  },
+  { name: "Slash GraphQL", isPublic: true, permissions: stdAdmins  },
+  { name: "React", isPublic: true, permissions: stdAdmins  },
+  { name: "Dgraph Internal", isPublic: false, permissions: stdAdmins  },
+]
 
 const qsQuote = `
 With Dgraph you design your application in GraphQL. 
@@ -86,12 +92,23 @@ function makePosts(): Array<AddPostInput> {
 
   return [
     {
+      title: "I have something auto-generated to say",
+      text: lorem.paragraphs(7),
+      datePublished: tenMinsAgo,
+      likes: 10,
+      category: { name: "General" },
+      author: michael,
+      comments: [],
+    },
+    {
       title: "My first post about Dgraph GraphQL",
       text: qsQuote,
       datePublished: now,
       likes: 1,
       category: { name: "GraphQL" },
       author: diggy,
+      comments: [],
+      tags: "SLASH GRAPHQL",
     },
     {
       title: "Let me quote from the docs",
@@ -100,14 +117,20 @@ function makePosts(): Array<AddPostInput> {
       likes: 5,
       category: { name: "GraphQL" },
       author: michael,
+      comments: [],
+      tags: "SLASH REACT",
     },
     {
       title: "I know some things about Dgraph",
-      text: "It's a GraphQL native DB written from the disk up in Go.\nIn fact, I know so much, I can tell you in latin.\n"+lorem.paragraphs(6),
+      text:
+        "It's a GraphQL native DB written from the disk up in Go.\nIn fact, I know so much, I can tell you in latin.\n" +
+        lorem.paragraphs(6),
       datePublished: anHourAgo,
       likes: 50,
       category: { name: "Dgraph" },
       author: diggy,
+      comments: [],
+      tags: "GRAPHQL REACT",
     },
     {
       title: "How should I layout my components?",
@@ -115,24 +138,9 @@ function makePosts(): Array<AddPostInput> {
       datePublished: yesterday,
       category: { name: "React" },
       author: michael,
+      comments: [],
     },
-    {
-      title: "Where should I deploy my frontend app?",
-      text: "I'm developing some new skills in development.  I'm writing a cricket scores app in Dgraph+React, but where should I deploy this?\n"+lorem.paragraphs(4),
-      datePublished: lastWeek,
-      likes: 1000000,
-      category: { name: "React" },
-      author: virat,
-    },
-    {
-      title: "I want to make an app for people's favorite movies",
-      text: lorem.paragraphs(7),
-      datePublished: lastWeek,
-      likes: 1000000,
-      category: { name: "Movies" },
-      author: anushka,
-    },
-  ]
+  ];
 }
 
 

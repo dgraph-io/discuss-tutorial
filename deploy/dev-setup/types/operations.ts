@@ -3,7 +3,6 @@ import * as Types from '../../../src/types/graphql';
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/client';
 import * as ApolloReactHooks from '@apollo/client';
-
 export type InitCategoriesMutationVariables = Types.Exact<{
   categories: Array<Types.AddCategoryInput>;
 }>;
@@ -106,3 +105,9 @@ export function useInitPostsMutation(baseOptions?: ApolloReactHooks.MutationHook
 export type InitPostsMutationHookResult = ReturnType<typeof useInitPostsMutation>;
 export type InitPostsMutationResult = ApolloReactCommon.MutationResult<InitPostsMutation>;
 export type InitPostsMutationOptions = ApolloReactCommon.BaseMutationOptions<InitPostsMutation, InitPostsMutationVariables>;
+export const namedOperations = {
+  Mutation: {
+    InitCategories: 'InitCategories',
+    InitPosts: 'InitPosts'
+  }
+}
