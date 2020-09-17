@@ -294,7 +294,7 @@ export function AppHeader() {
             </div>
           </Dropdown.Item>
           <Dropdown.Item>
-            <div onClick={() => logout()}>Logout</div>
+            <div onClick={() => logout({ returnTo: window.location.origin })}>Logout</div>
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
