@@ -2,7 +2,13 @@ const { readFileSync, existsSync } = require("fs")
 const readlineSync = require("readline-sync")
 const { GraphQLClient, gql } = require("graphql-request")
 const jwksClient = require("jwks-rsa")
-require("dotenv").config()
+
+// NODE_ENV=production yarn run load-data
+// or
+// yarn run --prod load-data
+const env = process.env.NODE_ENV ? process.env.NODE_ENV : "development"
+require("dotenv").config({ path: ".env." + env })
+const authConfigFile = "auth." + env + ".json"
 
 const updateSchema = gql`
   mutation($schema: String!) {
@@ -33,7 +39,7 @@ async function createSchema() {
   }
 
   var authConfig = JSON.parse(
-    readFileSync("deploy/SlashGraphQL/auth.json", "utf8")
+    readFileSync("deploy/SlashGraphQL/" + authConfigFile, "utf8")
   )
 
   if (existsSync("deploy/SlashGraphQL/public.key")) {

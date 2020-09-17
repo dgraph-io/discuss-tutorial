@@ -1,0 +1,15 @@
+{
+    "Dgraph_Authorization": {
+        "Header": "Authorization",
+        "Namespace": "https://slash.discuss.io/claims",
+        "Algo": "RS256",
+        "Audience": [
+            "KIBBivwzCumRFHx3ZtC4ScxalYGclKys",
+            "https://slash-discuss.us.auth0.com/api/v2/"
+        ]
+    },
+    "jwksClient": {
+        "jwksUri": "https://slash-discuss.us.auth0.com/.well-known/jwks.json",
+        "kid": "V-YVm9ugu9eiicZci6LDD"
+    }
+}
