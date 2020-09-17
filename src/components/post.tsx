@@ -36,7 +36,7 @@ export function Post() {
   const { user, isAuthenticated } = useAuth0();
 
   const { data: currentUser, loading: userLoading } = useGetUserQuery({
-    variables: { username: isAuthenticated ? user.email : "" },
+    variables: { username: isAuthenticated ? user.sub : "" },
   });
   const { data, loading, error } = useGetPostQuery({
     variables: { id: id },

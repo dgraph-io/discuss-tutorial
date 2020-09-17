@@ -47,7 +47,7 @@ function enrichJWTFromSlashGraphQL(user, context, callback) {
       })
 
       client
-        .request(getLoggedInUser, { username: user.email })
+        .request(getLoggedInUser, { username: user.user_id })
         .then((data, error) => {
           if (error) {
             callback(error, user, context)

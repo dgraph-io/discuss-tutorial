@@ -22,8 +22,8 @@ function addUserToSlashGraphQL(user, context, callback) {
   `
 
   const addUser = `
-    mutation($username: String!) {
-      addUser(input: [{ username: $username, displayName: $username }]) {
+    mutation($username: String!, $displayName: String) {
+      addUser(input: [{ username: $username, displayName: $displayName }]) {
         user {
           username
         }
@@ -46,8 +46,10 @@ function addUserToSlashGraphQL(user, context, callback) {
         headers: { Authorization: response.data.access_token },
       })
 
+      const displayName = user.email.substring(0, user.email.lastIndexOf("@"));
+
       client
-        .request(findUser, { username: user.email })
+        .request(findUser, { username: user.user_id })
         .then((data, error) => {
           if (error) {
             callback(error, user, context)
@@ -56,7 +58,7 @@ function addUserToSlashGraphQL(user, context, callback) {
             callback(null, user, context)
           } else {
             client
-              .request(addUser, { username: user.email })
+              .request(addUser, { username: user.user_id, displayName: displayName })
               .then((data, error) => {
                 callback(error, user, context)
               })

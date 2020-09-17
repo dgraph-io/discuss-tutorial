@@ -37,7 +37,7 @@ const client = new ApolloClient({
 })
 
 const diggy: AddUserInput = {
-  username: "diggy@dgraph.io",
+  username: "auth0|5f5868052d157e006ae52ae0",
   displayName: "Diggy",
   avatarImg: "/diggy.png",
   roles: [{ role: Role.Administrator }],

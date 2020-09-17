@@ -43,7 +43,7 @@ export function AppHeader() {
   } = useAuth0();
 
   const { data, loading, error } = useGetUserQuery({
-    variables: { username: isAuthenticated ? user.email : "" },
+    variables: { username: isAuthenticated ? user.sub : "" },
   });
   const {
     data: perm,
@@ -99,7 +99,7 @@ export function AppHeader() {
   const currentSettings = () => {
     const permData = perm?.queryPermission;
     permData?.forEach(async (perm) => {
-      if (perm?.user.username === user.email) {
+      if (perm?.user.username === user.sub) {
         setAdminStatus(true);
         const token = isAuthenticated ? await getIdTokenClaims() : "";
         const tokenVal = token ? token.__raw : "";
@@ -112,7 +112,7 @@ export function AppHeader() {
     setAvatarImg(
       data?.getUser?.avatarImg ? data.getUser.avatarImg : "/" + avatar + ".svg"
     );
-    setCurrentUser(user.email);
+    setCurrentUser(user.sub);
   };
 
   const submitSettings = () => {
@@ -139,7 +139,7 @@ export function AppHeader() {
       tags: tags,
       likes: 0,
       category: { id: category },
-      author: { username: user.email },
+      author: { username: user.sub },
       datePublished: new Date().toISOString(),
       comments: [],
     };
