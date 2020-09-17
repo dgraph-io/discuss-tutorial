@@ -5,8 +5,9 @@ import {
   AddCategoryInput,
   AddPostInput,
   AddUserInput,
+  CommentRef,
   PermissionRef,
-  Role
+  Role,
 } from "../../src/types/graphql"
 import {
   InitCategoriesMutation,
@@ -15,16 +16,22 @@ import {
   InitPostsMutation,
   InitPostsMutationVariables,
   InitPostsDocument,
+  InitDiggyMutation,
+  InitDiggyMutationVariables,
+  InitDiggyDocument,
 } from "./types/operations"
-import { lorem } from 'faker';
-import { title } from "process"
+import { lorem, name } from "faker"
 
-require("dotenv").config()
+// NODE_ENV=production yarn run load-data
+// or
+// yarn run --prod load-data
+const env = process.env.NODE_ENV ?? "development"
+require("dotenv").config({ path: ".env." + env })
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT + '/graphql',
+    uri: process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT + "/graphql",
     fetch: fetch,
   }),
 })
@@ -33,31 +40,19 @@ const diggy: AddUserInput = {
   username: "diggy@dgraph.io",
   displayName: "Diggy",
   avatarImg: "/diggy.png",
+  roles: [{ role: Role.Administrator }],
 }
-
-const michael: AddUserInput = {
-  username: "michael@dgraph.io",
-  displayName: "Michael",
-  // roles: [ { role: Role.Administrator } ]
-}
-
-// const apoorv: AddUserInput = {
-//   username: "apoorv@dgraph.io",
-//   displayName: "Michael",
-//   roles: [ { role: Role.Administrator } ]
-// }
 
 const stdAdmins: PermissionRef[] = [
-  { role: Role.Administrator, user: { username: "michael@dgraph.io" } },
-  // { role: Role.Administrator, user: { username: "apoorv@dgraph.io" } } 
+  { role: Role.Administrator, user: { username: "diggy@dgraph.io" } },
 ]
 
 const categories: Array<AddCategoryInput> = [
   { name: "General", isPublic: true, permissions: stdAdmins },
-  { name: "GraphQL", isPublic: true, permissions: stdAdmins  },
-  { name: "Slash GraphQL", isPublic: true, permissions: stdAdmins  },
-  { name: "React", isPublic: true, permissions: stdAdmins  },
-  { name: "Dgraph Internal", isPublic: false, permissions: stdAdmins  },
+  { name: "GraphQL", isPublic: true, permissions: stdAdmins },
+  { name: "Slash GraphQL", isPublic: true, permissions: stdAdmins },
+  { name: "React", isPublic: true, permissions: stdAdmins },
+  { name: "Dgraph Internal", isPublic: false, permissions: stdAdmins },
 ]
 
 const qsQuote = `
@@ -90,16 +85,7 @@ function makePosts(): Array<AddPostInput> {
   yesterday.setDate(now.getDate() - 1)
   lastWeek.setDate(now.getDate() - 7)
 
-  return [
-    {
-      title: "I have something auto-generated to say",
-      text: lorem.paragraphs(7),
-      datePublished: tenMinsAgo,
-      likes: 10,
-      category: { name: "General" },
-      author: michael,
-      comments: [],
-    },
+  const diggySays = [
     {
       title: "My first post about Dgraph GraphQL",
       text: qsQuote,
@@ -116,7 +102,7 @@ function makePosts(): Array<AddPostInput> {
       datePublished: tenMinsAgo,
       likes: 5,
       category: { name: "GraphQL" },
-      author: michael,
+      author: diggy,
       comments: [],
       tags: "SLASH REACT",
     },
@@ -137,16 +123,77 @@ function makePosts(): Array<AddPostInput> {
       text: "Oh man, I can do the code, but the layout, that's not my thing.",
       datePublished: yesterday,
       category: { name: "React" },
-      author: michael,
+      author: diggy,
       comments: [],
     },
-  ];
+    {
+      title: "I have something auto-generated to say",
+      text: lorem.paragraphs(7),
+      datePublished: yesterday,
+      likes: 10,
+      category: { name: "General" },
+      author: diggy,
+      comments: [],
+    },
+  ]
+
+  var posts: Array<AddPostInput> = []
+
+  for (let i = 0; i < Math.floor(Math.random() * 10 + 1); i++) {
+    const publishedAt = new Date()
+    const publishedBy = name.firstName()
+
+    var comments: Array<CommentRef> = []
+
+    for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
+      const commenter = name.firstName()
+      comments.push({
+        text: lorem.sentences(3),
+        author: {
+          username: commenter,
+          displayName: commenter,
+          avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+        },
+      })
+    }
+
+    const post: AddPostInput = {
+      title: lorem.sentence(),
+      text: lorem.paragraphs(7),
+      datePublished: publishedAt.setMinutes(
+        now.getMinutes() - Math.random() * 2000
+      ),
+      likes: Math.random() * 5,
+      category: { name: "General" },
+      author: {
+        username: publishedBy,
+        displayName: publishedBy,
+        avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+      },
+      comments: comments,
+    }
+
+    posts.push(post)
+  }
+
+  return [...diggySays, ...posts]
 }
 
-
-
-
 async function installData(): Promise<Readonly<GraphQLError[]> | undefined> {
+  const { data: diggyData, errors: diggyErrors } = await client.mutate<
+    InitDiggyMutation,
+    InitDiggyMutationVariables
+  >({
+    mutation: InitDiggyDocument,
+    variables: { diggy },
+  })
+
+  if (diggyErrors || !diggyData?.addUser?.user) {
+    return diggyErrors
+  }
+
+  console.log(`added Diggy`)
+
   const { data: categoryData, errors: categoryErrors } = await client.mutate<
     InitCategoriesMutation,
     InitCategoriesMutationVariables
@@ -159,7 +206,9 @@ async function installData(): Promise<Readonly<GraphQLError[]> | undefined> {
     return categoryErrors
   }
 
-  console.log(`added ` + categoryData.addCategory.category.length + ` users`)
+  console.log(
+    `added ` + categoryData.addCategory.category.length + ` categories`
+  )
 
   const posts = makePosts()
 

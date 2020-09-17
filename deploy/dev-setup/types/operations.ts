@@ -35,6 +35,22 @@ export type InitPostsMutation = (
   )> }
 );
 
+export type InitDiggyMutationVariables = Types.Exact<{
+  diggy: Types.AddUserInput;
+}>;
+
+
+export type InitDiggyMutation = (
+  { __typename?: 'Mutation' }
+  & { addUser?: Types.Maybe<(
+    { __typename?: 'AddUserPayload' }
+    & { user?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'User' }
+      & Pick<Types.User, 'username'>
+    )>>> }
+  )> }
+);
+
 
 export const InitCategoriesDocument = gql`
     mutation InitCategories($categories: [AddCategoryInput!]!) {
@@ -105,9 +121,44 @@ export function useInitPostsMutation(baseOptions?: ApolloReactHooks.MutationHook
 export type InitPostsMutationHookResult = ReturnType<typeof useInitPostsMutation>;
 export type InitPostsMutationResult = ApolloReactCommon.MutationResult<InitPostsMutation>;
 export type InitPostsMutationOptions = ApolloReactCommon.BaseMutationOptions<InitPostsMutation, InitPostsMutationVariables>;
+export const InitDiggyDocument = gql`
+    mutation InitDiggy($diggy: AddUserInput!) {
+  addUser(input: [$diggy]) {
+    user {
+      username
+    }
+  }
+}
+    `;
+export type InitDiggyMutationFn = ApolloReactCommon.MutationFunction<InitDiggyMutation, InitDiggyMutationVariables>;
+
+/**
+ * __useInitDiggyMutation__
+ *
+ * To run a mutation, you first call `useInitDiggyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInitDiggyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [initDiggyMutation, { data, loading, error }] = useInitDiggyMutation({
+ *   variables: {
+ *      diggy: // value for 'diggy'
+ *   },
+ * });
+ */
+export function useInitDiggyMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<InitDiggyMutation, InitDiggyMutationVariables>) {
+        return ApolloReactHooks.useMutation<InitDiggyMutation, InitDiggyMutationVariables>(InitDiggyDocument, baseOptions);
+      }
+export type InitDiggyMutationHookResult = ReturnType<typeof useInitDiggyMutation>;
+export type InitDiggyMutationResult = ApolloReactCommon.MutationResult<InitDiggyMutation>;
+export type InitDiggyMutationOptions = ApolloReactCommon.BaseMutationOptions<InitDiggyMutation, InitDiggyMutationVariables>;
 export const namedOperations = {
   Mutation: {
     InitCategories: 'InitCategories',
-    InitPosts: 'InitPosts'
+    InitPosts: 'InitPosts',
+    InitDiggy: 'InitDiggy'
   }
 }
