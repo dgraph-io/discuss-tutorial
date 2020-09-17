@@ -42,10 +42,6 @@ export function AppHeader() {
     getIdTokenClaims,
   } = useAuth0();
 
-  const redirectLoginTo =  window.location.origin + useLocation().pathname
-
-  console.log(redirectLoginTo)
-
   const { data, loading, error } = useGetUserQuery({
     variables: { username: isAuthenticated ? user.email : "" },
   });
@@ -305,7 +301,7 @@ export function AppHeader() {
     </span>
   ) : (
     <span>
-      <Button className="dgraph-btn" onClick={() => loginWithRedirect({ redirect_uri: redirectLoginTo })}>
+      <Button className="dgraph-btn" onClick={() => loginWithRedirect({ redirect_uri: window.location.origin })}>
         Log In
       </Button>
     </span>
