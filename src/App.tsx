@@ -4,7 +4,7 @@ import { Image } from "semantic-ui-react";
 import { AppHeader, Home, Post } from "./components";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
-export function App() {
+export default function App() {
   return (
     <>
       <div className="app-banner">
