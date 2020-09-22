@@ -126,9 +126,13 @@ export function Post() {
       DateTime.fromISO(data.getPost.datePublished).toRelative() ?? dateStr;
   }
 
-  const paras = data.getPost.text
-    .split("\n")
-    .map((str) => <p key={str}>{str}<br /></p>);
+  const paras = data.getPost.text.split("\n").map((str) => (
+    <p key={str}>
+      {str}
+      <br />
+      <br />
+    </p>
+  ));
 
   const updatePost = () => {
     setEditPost(false);
@@ -222,7 +226,15 @@ export function Post() {
                 <Comment.Author as="a">
                   {comment.author.displayName}
                 </Comment.Author>
-                <Comment.Text>{comment.text}</Comment.Text>
+                <Comment.Text>
+                  {comment.text.split("\n").map((str) => (
+                    <p key={str}>
+                      {str}
+                      <br />
+                      <br />
+                    </p>
+                  ))}
+                </Comment.Text>
               </Comment.Content>
             </Comment>
           </Comment.Group>
