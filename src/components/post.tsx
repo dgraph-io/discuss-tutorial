@@ -282,7 +282,6 @@ export function Post() {
           </Button>
         </div>
       )}
-      {comments}
       {canPostComments && (
         <div>
           <div className="flex mt-12">
@@ -313,6 +312,7 @@ export function Post() {
           </div>
         </div>
       )}
+      {comments}
     </div>
   );
 }
