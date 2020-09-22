@@ -130,7 +130,6 @@ export function Post() {
     <p key={str}>
       {str}
       <br />
-      <br />
     </p>
   ));
 
@@ -230,7 +229,6 @@ export function Post() {
                   {comment.text.split("\n").map((str) => (
                     <p key={str}>
                       {str}
-                      <br />
                       <br />
                     </p>
                   ))}
