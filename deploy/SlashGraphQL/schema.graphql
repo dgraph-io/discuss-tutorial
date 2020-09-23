@@ -13,8 +13,10 @@ type User
   username: String! @id
   displayName: String
   avatarImg: String
-  posts: [Post] @hasInverse(field: author)
   roles: [Permission] @hasInverse(field: user)
+  posts: [Post!]! @hasInverse(field: author)
+  upvoted: [Post!]! @hasInverse(field: upvotes)
+  downvotes: [Post!]! @hasInverse(field: downvotes)
 }
 
 type Permission
@@ -88,7 +90,8 @@ type Post
   title: String! @search(by: [term])
   text: String! @search(by: [fulltext])
   datePublished: DateTime
-  likes: Int
+  upvotes: [User!]!
+  downvotes: [User!]!
   author: User!
   tags: String @search(by: [term])
   category: Category! @hasInverse(field: posts)
