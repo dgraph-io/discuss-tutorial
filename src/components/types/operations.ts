@@ -5,7 +5,7 @@ import * as ApolloReactCommon from '@apollo/client';
 import * as ApolloReactHooks from '@apollo/client';
 export type PostDataFragment = (
   { __typename?: 'Post' }
-  & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished' | 'likes'>
+  & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
   & { category: (
     { __typename?: 'Category' }
     & Pick<Types.Category, 'id' | 'name'>
@@ -68,7 +68,7 @@ export type FilterPostsQuery = (
   { __typename?: 'Query' }
   & { queryPost?: Types.Maybe<Array<Types.Maybe<(
     { __typename?: 'Post' }
-    & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished' | 'likes'>
+    & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
     & { category: (
       { __typename?: 'Category' }
       & Pick<Types.Category, 'id' | 'name'>
@@ -225,7 +225,6 @@ export const PostDataFragmentDoc = gql`
   text
   tags
   datePublished
-  likes
   category {
     id
     name
@@ -332,7 +331,6 @@ export const FilterPostsDocument = gql`
     text
     tags
     datePublished
-    likes
     category(filter: {id: $categoryID}) {
       id
       name

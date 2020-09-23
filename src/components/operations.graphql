@@ -4,7 +4,6 @@ fragment postData on Post {
   text
   tags
   datePublished
-  likes
   category {
     id
     name
@@ -58,7 +57,6 @@ query filterPosts($filter: PostFilter, $categoryID: [ID!]) {
     text
     tags
     datePublished
-    likes
     category(filter: { id: $categoryID }) {
       id
       name
