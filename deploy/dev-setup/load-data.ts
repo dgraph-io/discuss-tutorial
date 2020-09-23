@@ -8,6 +8,7 @@ import {
   CommentRef,
   PermissionRef,
   Role,
+  UserRef,
 } from "../../src/types/graphql"
 import {
   InitCategoriesMutation,
@@ -166,13 +167,33 @@ function makePosts(): Array<AddPostInput> {
       })
     }
 
+    var upvoters:Array<UserRef> = []
+    var downvoters:Array<UserRef> = []
+    for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
+      const voter = name.firstName()
+      upvoters.push({
+        username: voter,
+        displayName: voter,
+        avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+      })
+    }
+    for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
+      const voter = name.firstName()
+      downvoters.push({
+        username: voter,
+        displayName: voter,
+        avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+      })
+    }
+
     const post: AddPostInput = {
       title: lorem.sentence(),
       text: lorem.paragraphs(7),
       datePublished: publishedAt.setMinutes(
         now.getMinutes() - Math.random() * 2000
       ),
-      likes: Math.random() * 5,
+      upvotes: upvoters,
+      downvotes: downvoters,
       category: { name: "General" },
       author: {
         username: publishedBy,
