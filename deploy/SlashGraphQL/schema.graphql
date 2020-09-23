@@ -16,7 +16,7 @@ type User
   roles: [Permission] @hasInverse(field: user)
   posts: [Post!]! @hasInverse(field: author)
   upvoted: [Post!]! @hasInverse(field: upvotes)
-  downvotes: [Post!]! @hasInverse(field: downvotes)
+  downvoted: [Post!]! @hasInverse(field: downvotes)
 }
 
 type Permission
