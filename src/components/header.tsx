@@ -137,11 +137,12 @@ export function AppHeader() {
       text: text,
       title: title,
       tags: tags,
-      likes: 0,
       category: { id: category },
       author: { username: user.sub },
       datePublished: new Date().toISOString(),
       comments: [],
+      upvotes: [],
+      downvotes:[]
     };
     addPost({ variables: { post: post } });
   };

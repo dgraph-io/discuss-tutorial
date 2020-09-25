@@ -12,7 +12,13 @@ export type PostDataFragment = (
   ), author: (
     { __typename?: 'User' }
     & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-  ), comments: Array<(
+  ), upvotes: Array<(
+    { __typename?: 'User' }
+    & Pick<Types.User, 'username'>
+  )>, downvotes: Array<(
+    { __typename?: 'User' }
+    & Pick<Types.User, 'username'>
+  )>, comments: Array<(
     { __typename?: 'Comment' }
     & Pick<Types.Comment, 'id' | 'text'>
     & { commentsOn: (
@@ -75,7 +81,13 @@ export type FilterPostsQuery = (
     ), author: (
       { __typename?: 'User' }
       & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-    ), comments: Array<(
+    ), upvotes: Array<(
+      { __typename?: 'User' }
+      & Pick<Types.User, 'username'>
+    )>, downvotes: Array<(
+      { __typename?: 'User' }
+      & Pick<Types.User, 'username'>
+    )>, comments: Array<(
       { __typename?: 'Comment' }
       & Pick<Types.Comment, 'id' | 'text'>
       & { commentsOn: (
@@ -203,7 +215,8 @@ export type UpdateUserMutation = (
 
 export type UpdatePostMutationVariables = Types.Exact<{
   id: Types.Scalars['ID'];
-  post?: Types.Maybe<Types.PostPatch>;
+  postset?: Types.Maybe<Types.PostPatch>;
+  postremove?: Types.Maybe<Types.PostPatch>;
 }>;
 
 
@@ -233,6 +246,12 @@ export const PostDataFragmentDoc = gql`
     username
     displayName
     avatarImg
+  }
+  upvotes {
+    username
+  }
+  downvotes {
+    username
   }
   comments {
     id
@@ -339,6 +358,12 @@ export const FilterPostsDocument = gql`
       username
       displayName
       avatarImg
+    }
+    upvotes {
+      username
+    }
+    downvotes {
+      username
     }
     comments {
       id
@@ -615,8 +640,8 @@ export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutati
 export type UpdateUserMutationResult = ApolloReactCommon.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const UpdatePostDocument = gql`
-    mutation updatePost($id: ID!, $post: PostPatch) {
-  updatePost(input: {filter: {id: [$id]}, set: $post}) {
+    mutation updatePost($id: ID!, $postset: PostPatch, $postremove: PostPatch) {
+  updatePost(input: {filter: {id: [$id]}, set: $postset, remove: $postremove}) {
     post {
       ...postData
     }
@@ -639,7 +664,8 @@ export type UpdatePostMutationFn = ApolloReactCommon.MutationFunction<UpdatePost
  * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
  *   variables: {
  *      id: // value for 'id'
- *      post: // value for 'post'
+ *      postset: // value for 'postset'
+ *      postremove: // value for 'postremove'
  *   },
  * });
  */

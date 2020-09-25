@@ -13,6 +13,12 @@ fragment postData on Post {
     displayName
     avatarImg
   }
+  upvotes {
+    username
+  }
+  downvotes {
+    username
+  }
   comments {
     id
     text
@@ -65,6 +71,12 @@ query filterPosts($filter: PostFilter, $categoryID: [ID!]) {
       username
       displayName
       avatarImg
+    }
+    upvotes {
+      username
+    }
+    downvotes {
+      username
     }
     comments {
       id
@@ -155,8 +167,8 @@ mutation updateUser($username: String!, $user: UserPatch) {
   }
 }
 
-mutation updatePost($id: ID!, $post: PostPatch) {
-  updatePost(input: { filter: { id: [$id] }, set: $post }) {
+mutation updatePost($id: ID!, $postset: PostPatch, $postremove: PostPatch) {
+  updatePost(input: { filter: { id: [$id] }, set: $postset, remove: $postremove }) {
     post {
       ...postData
     }

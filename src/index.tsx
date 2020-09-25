@@ -40,6 +40,7 @@ const AuthorizedApolloProvider: React.FC = ({ children }) => {
   const apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
     cache: new InMemoryCache({
+      // addTypename: false,
       typePolicies: {
         Query: {
           fields: {

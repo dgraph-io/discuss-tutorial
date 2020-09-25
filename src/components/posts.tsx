@@ -90,7 +90,7 @@ export function PostFeed() {
   const dataset = searchStatus ? filteredData?.queryPost : data?.queryPost;
 
   const items = dataset?.map((post) => {
-    const likes = post?.likes ?? 0;
+    const upvotes = post?.upvotes.length ?? 0;
     const tagsArray = post?.tags?.trim().split(/\s+/) || [];
 
     return (
@@ -128,8 +128,8 @@ export function PostFeed() {
         </Table.Cell>
         <Table.Cell>
           <p>
-            <i className="heart outline icon"></i> {likes} Like
-            {likes === 1 ? "" : "s"}
+            <i className="heart outline icon"></i> {upvotes} Upvote
+            {upvotes === 1 ? "" : "s"}
           </p>
           <p>
             {" "}

@@ -89,6 +89,12 @@ export function Post() {
   }
 
   const canEditThisPost = data.getPost.author.username === user?.email;
+  const upvoteStatus = data.getPost?.upvotes.find(
+    (user) => user.username === currentUser?.getUser?.username
+  );
+  const downvoteStatus = data.getPost?.downvotes.find(
+    (user) => user.username === currentUser?.getUser?.username
+  );
   const canPostComments =
     isAuthenticated &&
     !!allWriteableCategories.find((c) => c?.id === data.getPost?.category.id);
@@ -126,9 +132,12 @@ export function Post() {
       DateTime.fromISO(data.getPost.datePublished).toRelative() ?? dateStr;
   }
 
-  const paras = data.getPost.text
-    .split("\n")
-    .map((str) => <p key={str}>{str}<br /></p>);
+  const paras = data.getPost.text.split("\n").map((str) => (
+    <p key={str}>
+      {str}
+      <br />
+    </p>
+  ));
 
   const updatePost = () => {
     setEditPost(false);
@@ -136,11 +145,64 @@ export function Post() {
       text: text,
       title: title,
       tags: tags,
-      // likes: 0,
       category: { id: category },
     };
 
-    updatePostMutation({ variables: { post: post, id: id } });
+    updatePostMutation({ variables: { postset: post, id: id } });
+  };
+
+  const updateUpVote = () => {
+    let postremove;
+    let postset;
+    if (upvoteStatus) {
+      postremove = {
+        upvotes: [{ username: currentUser?.getUser?.username }],
+      };
+      updatePostMutation({ variables: { postremove: postremove, id: id } });
+    } else {
+      postset = {
+        upvotes: [
+          ...(data.getPost?.upvotes ?? []),
+          currentUser?.getUser
+            ? { username: currentUser.getUser.username }
+            : {},
+        ],
+      };
+      postremove = {
+        downvotes: [{ username: currentUser?.getUser?.username }],
+      };
+      let variables = downvoteStatus
+        ? { postset: postset, postremove: postremove, id: id }
+        : { postset: postset, id: id };
+      updatePostMutation({ variables: variables });
+    }
+  };
+
+  const updateDownVote = () => {
+    let postremove;
+    let postset;
+    if (downvoteStatus) {
+      postremove = {
+        downvotes: [{ username: currentUser?.getUser?.username }],
+      };
+      updatePostMutation({ variables: { postremove: postremove, id: id } });
+    } else {
+      postset = {
+        downvotes: [
+          ...(data.getPost?.downvotes ?? []),
+          currentUser?.getUser
+            ? { username: currentUser.getUser.username }
+            : {},
+        ],
+      };
+      postremove = {
+        upvotes: [{ username: currentUser?.getUser?.username }],
+      };
+      let variables = upvoteStatus
+        ? { postset: postset, postremove: postremove, id: id }
+        : { postset: postset, id: id };
+      updatePostMutation({ variables: variables });
+    }
   };
 
   const showEditPost = (
@@ -262,6 +324,40 @@ export function Post() {
         </Header.Content>
       </Header>
       {paras}
+      {isAuthenticated && (
+        <div className="mt-4 mb-4">
+          <span className="mr-4">
+            {upvoteStatus ? (
+              <i
+                className="large thumbs up icon cursor-pointer"
+                onClick={updateUpVote}
+              ></i>
+            ) : (
+              <i
+                className="large thumbs up outline icon cursor-pointer"
+                onClick={updateUpVote}
+              ></i>
+            )}
+            {data.getPost.upvotes.length} Upvote
+            {data.getPost.upvotes.length > 1 ? "s" : ""}
+          </span>
+          <span>
+            {downvoteStatus ? (
+              <i
+                className="large thumbs down icon cursor-pointer"
+                onClick={updateDownVote}
+              ></i>
+            ) : (
+              <i
+                className="large thumbs down outline icon cursor-pointer"
+                onClick={updateDownVote}
+              ></i>
+            )}
+            {data.getPost.downvotes.length} Downvote
+            {data.getPost.downvotes.length > 1 ? "s" : ""}
+          </span>
+        </div>
+      )}
       {showEditPost}
       {canEditThisPost && (
         <div className="mt-4">
