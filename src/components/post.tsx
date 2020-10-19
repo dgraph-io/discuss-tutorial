@@ -152,57 +152,29 @@ export function Post() {
   };
 
   const updateUpVote = () => {
-    let postremove;
-    let postset;
-    if (upvoteStatus) {
-      postremove = {
-        upvotes: [{ username: currentUser?.getUser?.username }],
-      };
-      updatePostMutation({ variables: { postremove: postremove, id: id } });
-    } else {
-      postset = {
-        upvotes: [
-          ...(data.getPost?.upvotes ?? []),
-          currentUser?.getUser
-            ? { username: currentUser.getUser.username }
-            : {},
-        ],
-      };
-      postremove = {
-        downvotes: [{ username: currentUser?.getUser?.username }],
-      };
-      let variables = downvoteStatus
-        ? { postset: postset, postremove: postremove, id: id }
-        : { postset: postset, id: id };
-      updatePostMutation({ variables: variables });
-    }
+    const postset = {
+      upvotes: [
+        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
+      ],
+    };
+    const postremove = {
+      downvotes: [{ username: currentUser?.getUser?.username }],
+    };
+    const variables = { postset: postset, postremove: postremove, id: id };
+    updatePostMutation({ variables: variables });
   };
 
   const updateDownVote = () => {
-    let postremove;
-    let postset;
-    if (downvoteStatus) {
-      postremove = {
-        downvotes: [{ username: currentUser?.getUser?.username }],
-      };
-      updatePostMutation({ variables: { postremove: postremove, id: id } });
-    } else {
-      postset = {
-        downvotes: [
-          ...(data.getPost?.downvotes ?? []),
-          currentUser?.getUser
-            ? { username: currentUser.getUser.username }
-            : {},
-        ],
-      };
-      postremove = {
-        upvotes: [{ username: currentUser?.getUser?.username }],
-      };
-      let variables = upvoteStatus
-        ? { postset: postset, postremove: postremove, id: id }
-        : { postset: postset, id: id };
-      updatePostMutation({ variables: variables });
-    }
+    const postset = {
+      downvotes: [
+        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
+      ],
+    };
+    const postremove = {
+      upvotes: [{ username: currentUser?.getUser?.username }],
+    };
+    const variables = { postset: postset, postremove: postremove, id: id };
+    updatePostMutation({ variables: variables });
   };
 
   const showEditPost = (
@@ -329,8 +301,7 @@ export function Post() {
           <span className="mr-4">
             {upvoteStatus ? (
               <i
-                className="large thumbs up icon cursor-pointer"
-                onClick={updateUpVote}
+                className="large thumbs up icon"
               ></i>
             ) : (
               <i
@@ -344,8 +315,7 @@ export function Post() {
           <span>
             {downvoteStatus ? (
               <i
-                className="large thumbs down icon cursor-pointer"
-                onClick={updateDownVote}
+                className="large thumbs down icon"
               ></i>
             ) : (
               <i
