@@ -14,9 +14,9 @@ type User
   displayName: String
   avatarImg: String
   roles: [Permission] @hasInverse(field: user)
-  posts: [Post!]! @hasInverse(field: author)
-  upvoted: [Post!]! @hasInverse(field: upvotes)
-  downvoted: [Post!]! @hasInverse(field: downvotes)
+  posts: [Post!] @hasInverse(field: author)
+  upvoted: [Post!] @hasInverse(field: upvotes)
+  downvoted: [Post!] @hasInverse(field: downvotes)
 }
 
 type Permission
