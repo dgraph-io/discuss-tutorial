@@ -89,10 +89,10 @@ export function Post() {
   }
 
   const canEditThisPost = data.getPost.author.username === user?.email;
-  const upvoteStatus = data.getPost?.upvotes.find(
+  const hasUpvoted = !! data.getPost?.upvotes.find(
     (user) => user.username === currentUser?.getUser?.username
   );
-  const downvoteStatus = data.getPost?.downvotes.find(
+  const hasDownvoted = !! data.getPost?.downvotes.find(
     (user) => user.username === currentUser?.getUser?.username
   );
   const canPostComments =
@@ -158,7 +158,9 @@ export function Post() {
       ],
     };
     const postremove = {
-      downvotes: [{ username: currentUser?.getUser?.username }],
+      downvotes: [
+        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
+      ],
     };
     const variables = { postset: postset, postremove: postremove, id: id };
     updatePostMutation({ variables: variables });
@@ -171,7 +173,9 @@ export function Post() {
       ],
     };
     const postremove = {
-      upvotes: [{ username: currentUser?.getUser?.username }],
+      upvotes: [
+        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
+      ],
     };
     const variables = { postset: postset, postremove: postremove, id: id };
     updatePostMutation({ variables: variables });
@@ -299,7 +303,7 @@ export function Post() {
       {isAuthenticated && (
         <div className="mt-4 mb-4">
           <span className="mr-4">
-            {upvoteStatus ? (
+            {hasUpvoted ? (
               <i
                 className="large thumbs up icon"
               ></i>
@@ -313,7 +317,7 @@ export function Post() {
             {data.getPost.upvotes.length > 1 ? "s" : ""}
           </span>
           <span>
-            {downvoteStatus ? (
+            {hasDownvoted ? (
               <i
                 className="large thumbs down icon"
               ></i>
