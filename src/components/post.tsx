@@ -20,6 +20,7 @@ import {
   useUpdatePostMutation,
   useGetUserQuery,
   namedOperations,
+  useUpdateUserMutation,
 } from "./types/operations";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -51,6 +52,9 @@ export function Post() {
     refetchQueries: [namedOperations.Query.getPost],
   });
   const [updatePostMutation] = useUpdatePostMutation({
+    refetchQueries: [namedOperations.Query.getPost],
+  });
+  const [updateUserMutation] = useUpdateUserMutation({
     refetchQueries: [namedOperations.Query.getPost],
   });
 
@@ -89,10 +93,10 @@ export function Post() {
   }
 
   const canEditThisPost = data.getPost.author.username === user?.email;
-  const hasUpvoted = !! data.getPost?.upvotes.find(
+  const hasUpvoted = !!data.getPost?.upvotes.find(
     (user) => user.username === currentUser?.getUser?.username
   );
-  const hasDownvoted = !! data.getPost?.downvotes.find(
+  const hasDownvoted = !!data.getPost?.downvotes.find(
     (user) => user.username === currentUser?.getUser?.username
   );
   const canPostComments =
@@ -152,33 +156,33 @@ export function Post() {
   };
 
   const updateUpVote = () => {
-    const postset = {
-      upvotes: [
-        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
-      ],
+    const userset = {
+      upvoted: [{ id: id }],
     };
-    const postremove = {
-      downvotes: [
-        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
-      ],
+    const userremove = {
+      downvoted: [{ id: id }],
     };
-    const variables = { postset: postset, postremove: postremove, id: id };
-    updatePostMutation({ variables: variables });
+    const varibles = {
+      username: currentUser?.getUser ? currentUser.getUser.username : "",
+      user: userset,
+      userremove: userremove,
+    };
+    updateUserMutation({ variables: varibles });
   };
 
   const updateDownVote = () => {
-    const postset = {
-      downvotes: [
-        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
-      ],
+    const userset = {
+      downvoted: [{ id: id }],
     };
-    const postremove = {
-      upvotes: [
-        currentUser?.getUser ? { username: currentUser.getUser.username } : {},
-      ],
+    const userremove = {
+      upvoted: [{ id: id }],
     };
-    const variables = { postset: postset, postremove: postremove, id: id };
-    updatePostMutation({ variables: variables });
+    const varibles = {
+      username: currentUser?.getUser ? currentUser.getUser.username : "",
+      user: userset,
+      userremove: userremove,
+    };
+    updateUserMutation({ variables: varibles });
   };
 
   const showEditPost = (
@@ -304,9 +308,7 @@ export function Post() {
         <div className="mt-4 mb-4">
           <span className="mr-4">
             {hasUpvoted ? (
-              <i
-                className="large thumbs up icon"
-              ></i>
+              <i className="large thumbs up icon"></i>
             ) : (
               <i
                 className="large thumbs up outline icon cursor-pointer"
@@ -318,9 +320,7 @@ export function Post() {
           </span>
           <span>
             {hasDownvoted ? (
-              <i
-                className="large thumbs down icon"
-              ></i>
+              <i className="large thumbs down icon"></i>
             ) : (
               <i
                 className="large thumbs down outline icon cursor-pointer"

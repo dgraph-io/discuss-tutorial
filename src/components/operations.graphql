@@ -158,8 +158,8 @@ mutation addComment($comment: AddCommentInput!) {
   }
 }
 
-mutation updateUser($username: String!, $user: UserPatch) {
-  updateUser(input: {filter: {username: {eq: $username}}, set: $user}) {
+mutation updateUser($username: String!, $user: UserPatch, $userremove: UserPatch) {
+  updateUser(input: {filter: {username: {eq: $username}}, set: $user, remove: $userremove}) {
     user {
       displayName
       avatarImg

@@ -199,6 +199,7 @@ export type AddCommentMutation = (
 export type UpdateUserMutationVariables = Types.Exact<{
   username: Types.Scalars['String'];
   user?: Types.Maybe<Types.UserPatch>;
+  userremove?: Types.Maybe<Types.UserPatch>;
 }>;
 
 
@@ -604,8 +605,8 @@ export type AddCommentMutationHookResult = ReturnType<typeof useAddCommentMutati
 export type AddCommentMutationResult = ApolloReactCommon.MutationResult<AddCommentMutation>;
 export type AddCommentMutationOptions = ApolloReactCommon.BaseMutationOptions<AddCommentMutation, AddCommentMutationVariables>;
 export const UpdateUserDocument = gql`
-    mutation updateUser($username: String!, $user: UserPatch) {
-  updateUser(input: {filter: {username: {eq: $username}}, set: $user}) {
+    mutation updateUser($username: String!, $user: UserPatch, $userremove: UserPatch) {
+  updateUser(input: {filter: {username: {eq: $username}}, set: $user, remove: $userremove}) {
     user {
       displayName
       avatarImg
@@ -630,6 +631,7 @@ export type UpdateUserMutationFn = ApolloReactCommon.MutationFunction<UpdateUser
  *   variables: {
  *      username: // value for 'username'
  *      user: // value for 'user'
+ *      userremove: // value for 'userremove'
  *   },
  * });
  */

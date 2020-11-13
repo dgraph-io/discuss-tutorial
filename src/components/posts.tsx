@@ -23,7 +23,7 @@ export function PostFeed() {
     getFilteredPosts,
     { loading: filterLoading, data: filteredData, error: filterError },
   ] = useFilterPostsLazyQuery({
-    fetchPolicy: "cache-and-network"
+    fetchPolicy: "cache-and-network",
   });
 
   const { allCategories, loading: catLoading, error: catError } = useCategories(
@@ -56,25 +56,22 @@ export function PostFeed() {
   };
 
   const searchPosts = () => {
-    let filter;
+    let filter: any = {};
     setSearchStatus(true);
-    if (searchText === "" && tags !== "") {
-      filter = {
-        tags: { allofterms: tags },
+    if (tags !== "") {
+      filter.tags = {
+        allofterms: tags,
       };
-    } else if (searchText !== "" && tags === "") {
-      filter = {
-        title: { anyofterms: searchText },
-        or: { text: { anyoftext: searchText } },
+    }
+    if (searchText !== "") {
+      filter.title = {
+        anyofterms: searchText,
       };
-    } else if (searchText !== "" && tags !== "") {
-      filter = {
-        title: { anyofterms: searchText },
-        tags: { allofterms: tags },
-        or: { text: { anyoftext: searchText } },
+      filter.or = {
+        text: { anyoftext: searchText },
       };
-    } else {
-      filter = {};
+    }
+    if (Object.keys(filter).length === 0) {
       if (!category) {
         setSearchStatus(false);
       }
@@ -123,7 +120,7 @@ export function PostFeed() {
                 </Label>
               );
             }
-            return " "
+            return " ";
           })}
         </Table.Cell>
         <Table.Cell>
