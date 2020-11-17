@@ -1,4 +1,6 @@
-Discuss clone powered by Slash GraphQL
+Deployment status : [![Netlify Status](https://api.netlify.com/api/v1/badges/d180ab9f-319c-45eb-81ee-b82f3261c106/deploy-status)](https://app.netlify.com/sites/slash-graphql-discuss/deploys)
+
+Message board app (discuss clone) powered by Slash GraphQL
 
 This app is was built as part of a tutorial on building apps with Slash GraphQL
 
