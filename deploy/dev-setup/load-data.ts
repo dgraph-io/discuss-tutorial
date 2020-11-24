@@ -8,6 +8,7 @@ import {
   CommentRef,
   PermissionRef,
   Role,
+  UserRef,
 } from "../../src/types/graphql"
 import {
   InitCategoriesMutation,
@@ -41,6 +42,9 @@ const diggy: AddUserInput = {
   displayName: "Diggy",
   avatarImg: "/diggy.png",
   roles: [{ role: Role.Administrator }],
+  posts: [],
+  upvoted: [],
+  downvoted: []
 }
 
 const stdAdmins: PermissionRef[] = [
@@ -85,12 +89,13 @@ function makePosts(): Array<AddPostInput> {
   yesterday.setDate(now.getDate() - 1)
   lastWeek.setDate(now.getDate() - 7)
 
-  const diggySays = [
+  const diggySays: Array<AddPostInput> = [
     {
       title: "My first post about Dgraph GraphQL",
       text: qsQuote,
       datePublished: now,
-      likes: 1,
+      upvotes: [],
+      downvotes: [],
       category: { name: "GraphQL" },
       author: diggy,
       comments: [],
@@ -100,7 +105,8 @@ function makePosts(): Array<AddPostInput> {
       title: "Let me quote from the docs",
       text: docsQuote,
       datePublished: tenMinsAgo,
-      likes: 5,
+      upvotes: [],
+      downvotes: [],
       category: { name: "GraphQL" },
       author: diggy,
       comments: [],
@@ -112,7 +118,8 @@ function makePosts(): Array<AddPostInput> {
         "It's a GraphQL native DB written from the disk up in Go.\nIn fact, I know so much, I can tell you in latin.\n" +
         lorem.paragraphs(6),
       datePublished: anHourAgo,
-      likes: 50,
+      upvotes: [],
+      downvotes: [],
       category: { name: "Dgraph" },
       author: diggy,
       comments: [],
@@ -125,15 +132,18 @@ function makePosts(): Array<AddPostInput> {
       category: { name: "React" },
       author: diggy,
       comments: [],
+      upvotes: [],
+      downvotes: [],
     },
     {
       title: "I have something auto-generated to say",
       text: lorem.paragraphs(7),
       datePublished: yesterday,
-      likes: 10,
       category: { name: "General" },
       author: diggy,
       comments: [],
+      upvotes: [],
+      downvotes: [],
     },
   ]
 
@@ -157,13 +167,33 @@ function makePosts(): Array<AddPostInput> {
       })
     }
 
+    var upvoters:Array<UserRef> = []
+    var downvoters:Array<UserRef> = []
+    for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
+      const voter = name.firstName()
+      upvoters.push({
+        username: voter,
+        displayName: voter,
+        avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+      })
+    }
+    for (let i = 0; i < Math.floor(Math.random() * 5 + 1); i++) {
+      const voter = name.firstName()
+      downvoters.push({
+        username: voter,
+        displayName: voter,
+        avatarImg: "/" + Math.floor(Math.random() * (9 - 1) + 1) + ".svg",
+      })
+    }
+
     const post: AddPostInput = {
       title: lorem.sentence(),
       text: lorem.paragraphs(7),
       datePublished: publishedAt.setMinutes(
         now.getMinutes() - Math.random() * 2000
       ),
-      likes: Math.random() * 5,
+      upvotes: upvoters,
+      downvotes: downvoters,
       category: { name: "General" },
       author: {
         username: publishedBy,

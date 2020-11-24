@@ -3,9 +3,9 @@ const readlineSync = require("readline-sync")
 const { GraphQLClient, gql } = require("graphql-request")
 const jwksClient = require("jwks-rsa")
 
-// NODE_ENV=production yarn run load-data
+// NODE_ENV=production yarn run deploy-slash
 // or
-// yarn run --prod load-data
+// yarn run --prod deploy-slash
 const env = process.env.NODE_ENV ? process.env.NODE_ENV : "development"
 require("dotenv").config({ path: ".env." + env })
 const authConfigFile = "auth." + env + ".json"

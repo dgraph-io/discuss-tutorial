@@ -4,7 +4,6 @@ fragment postData on Post {
   text
   tags
   datePublished
-  likes
   category {
     id
     name
@@ -13,6 +12,12 @@ fragment postData on Post {
     username
     displayName
     avatarImg
+  }
+  upvotes {
+    username
+  }
+  downvotes {
+    username
   }
   comments {
     id
@@ -58,7 +63,6 @@ query filterPosts($filter: PostFilter, $categoryID: [ID!]) {
     text
     tags
     datePublished
-    likes
     category(filter: { id: $categoryID }) {
       id
       name
@@ -67,6 +71,12 @@ query filterPosts($filter: PostFilter, $categoryID: [ID!]) {
       username
       displayName
       avatarImg
+    }
+    upvotes {
+      username
+    }
+    downvotes {
+      username
     }
     comments {
       id
@@ -148,8 +158,8 @@ mutation addComment($comment: AddCommentInput!) {
   }
 }
 
-mutation updateUser($username: String!, $user: UserPatch) {
-  updateUser(input: {filter: {username: {eq: $username}}, set: $user}) {
+mutation updateUser($username: String!, $user: UserPatch, $userremove: UserPatch) {
+  updateUser(input: {filter: {username: {eq: $username}}, set: $user, remove: $userremove}) {
     user {
       displayName
       avatarImg
@@ -157,10 +167,20 @@ mutation updateUser($username: String!, $user: UserPatch) {
   }
 }
 
-mutation updatePost($id: ID!, $post: PostPatch) {
-  updatePost(input: { filter: { id: [$id] }, set: $post }) {
+mutation updatePost($id: ID!, $postset: PostPatch, $postremove: PostPatch) {
+  updatePost(input: { filter: { id: [$id] }, set: $postset, remove: $postremove }) {
     post {
       ...postData
+    }
+  }
+}
+
+subscription subComment($id: ID!) {
+  queryComment @cascade {
+    text
+    id
+    commentsOn(filter: { id: [$id] }) {
+      text
     }
   }
 }
