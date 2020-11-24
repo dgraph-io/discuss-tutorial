@@ -174,3 +174,13 @@ mutation updatePost($id: ID!, $postset: PostPatch, $postremove: PostPatch) {
     }
   }
 }
+
+subscription subComment($id: ID!) {
+  queryComment @cascade {
+    text
+    id
+    commentsOn(filter: { id: [$id] }) {
+      text
+    }
+  }
+}

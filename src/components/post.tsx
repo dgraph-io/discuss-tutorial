@@ -13,6 +13,7 @@ import {
   Button,
   TextAreaProps,
   Comment,
+  Message,
 } from "semantic-ui-react";
 import {
   useGetPostQuery,
@@ -21,6 +22,7 @@ import {
   useGetUserQuery,
   namedOperations,
   useUpdateUserMutation,
+  useSubCommentSubscription,
 } from "./types/operations";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -39,9 +41,16 @@ export function Post() {
   const { data: currentUser, loading: userLoading } = useGetUserQuery({
     variables: { username: isAuthenticated ? user.sub : "" },
   });
-  const { data, loading, error } = useGetPostQuery({
+  const { data, loading, error, refetch } = useGetPostQuery({
     variables: { id: id },
   });
+  const {
+    data: newComments,
+    loading: newCommentsLoading,
+  } = useSubCommentSubscription({
+    variables: { id: id },
+  });
+
   const {
     allWriteableCategories,
     loading: catLoading,
@@ -65,7 +74,8 @@ export function Post() {
   const [editPost, setEditPost] = useState(false);
   const [commentText, setCommentText] = useState("");
 
-  if (loading || userLoading || catLoading) return <Loader active />;
+  if (loading || userLoading || catLoading || newCommentsLoading)
+    return <Loader active />;
   if (error) {
     return (
       <Container text className="mt-24">
@@ -91,6 +101,11 @@ export function Post() {
       </Container>
     );
   }
+  const newCmts = newComments?.queryComment ? newComments.queryComment : [];
+  const notificationComments =
+    newCmts.length > data.getPost.comments.length
+      ? newCmts.length - data.getPost.comments.length
+      : false;
 
   const canEditThisPost = data.getPost.author.username === user?.email;
   const hasUpvoted = !!data.getPost?.upvotes.find(
@@ -275,6 +290,11 @@ export function Post() {
 
   return (
     <div className="layout-margin">
+      {notificationComments && (
+        <Message className="cursor-pointer" onClick={() => refetch()}>
+          {notificationComments} New comments{" "}
+        </Message>
+      )}
       <div>
         <Header as="h1">{data.getPost.title} </Header>
         <span className="ui red empty mini circular label"></span>

@@ -98,8 +98,7 @@ type Post
   comments: [Comment!]!
 }
 
-type Comment
-@auth(
+type Comment @withSubscription @auth(
   query: {
     or: [
       { rule: "<<you-have-any-permission-for-comments-category>>" }

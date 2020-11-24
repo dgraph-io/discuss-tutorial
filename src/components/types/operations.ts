@@ -232,6 +232,23 @@ export type UpdatePostMutation = (
   )> }
 );
 
+export type SubCommentSubscriptionVariables = Types.Exact<{
+  id: Types.Scalars['ID'];
+}>;
+
+
+export type SubCommentSubscription = (
+  { __typename?: 'Subscription' }
+  & { queryComment?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Types.Comment, 'text' | 'id'>
+    & { commentsOn: (
+      { __typename?: 'Post' }
+      & Pick<Types.Post, 'text'>
+    ) }
+  )>>> }
+);
+
 export const PostDataFragmentDoc = gql`
     fragment postData on Post {
   id
@@ -677,6 +694,39 @@ export function useUpdatePostMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = ApolloReactCommon.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const SubCommentDocument = gql`
+    subscription subComment($id: ID!) {
+  queryComment @cascade {
+    text
+    id
+    commentsOn(filter: {id: [$id]}) {
+      text
+    }
+  }
+}
+    `;
+
+/**
+ * __useSubCommentSubscription__
+ *
+ * To run a query within a React component, call `useSubCommentSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useSubCommentSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSubCommentSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSubCommentSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<SubCommentSubscription, SubCommentSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<SubCommentSubscription, SubCommentSubscriptionVariables>(SubCommentDocument, baseOptions);
+      }
+export type SubCommentSubscriptionHookResult = ReturnType<typeof useSubCommentSubscription>;
+export type SubCommentSubscriptionResult = ApolloReactCommon.SubscriptionResult<SubCommentSubscription>;
 export const namedOperations = {
   Query: {
     allPosts: 'allPosts',
@@ -691,6 +741,9 @@ export const namedOperations = {
     addComment: 'addComment',
     updateUser: 'updateUser',
     updatePost: 'updatePost'
+  },
+  Subscription: {
+    subComment: 'subComment'
   },
   Fragment: {
     postData: 'postData'
