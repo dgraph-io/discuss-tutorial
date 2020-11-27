@@ -1,8 +1,6 @@
-import React from "react";
-import "./App.css";
-import { Image } from "semantic-ui-react";
-import { AppHeader, Home, Post } from "./components";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import React from "react"
+import "./App.css"
+import { Image } from "semantic-ui-react"
 
 export function App() {
   return (
@@ -19,14 +17,13 @@ export function App() {
         </div>
       </div>
       <div className="App">
-        <BrowserRouter>
-          <AppHeader />
-          <Switch>
-            <Route exact path="/post/:id" component={Post} />
-            <Route exact path="/" component={Home} />
-          </Switch>
-        </BrowserRouter>
+        <div className="mt-4 mx-8">
+          <p>
+            Learn about building GraphQL apps with Slash GraphQL at
+            https://dgraph.io/learn
+          </p>
+        </div>
       </div>
     </>
-  );
+  )
 }

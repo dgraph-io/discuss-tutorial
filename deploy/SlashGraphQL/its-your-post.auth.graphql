@@ -1,7 +1,0 @@
-query itsYourPost($username: String!) {
-  queryPost {
-    author(filter: { username: { eq: $username } }) {
-      username
-    }
-  }
-}

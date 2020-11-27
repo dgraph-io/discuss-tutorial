@@ -1,7 +1,0 @@
-query postInPublicCategory {
-  queryPost {
-    category(filter: { isPublic: true }) {
-      id
-    }
-  }
-}

@@ -1,9 +1,0 @@
-query hasAnyCategoryPermission($username: String!) {
-  queryCategory {
-    permissions {
-      user(filter: { username: { eq: $username } }) {
-        username
-      }
-    }
-  }
-}

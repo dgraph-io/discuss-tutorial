@@ -1,9 +1,0 @@
-query commentOnPostInPublicCategory {
-  queryComment {
-    commentsOn {
-      category(filter: { isPublic: true }) {
-        id
-      }
-    }
-  }
-}
