@@ -5,9 +5,30 @@ import * as serviceWorker from "./serviceWorker"
 import "semantic-ui-css/semantic.min.css"
 import "./index.css"
 import "./styles/main.css"
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  createHttpLink,
+} from "@apollo/client"
+
+const createApolloClient = () => {
+  const httpLink = createHttpLink({
+    uri: "<<Slash-GraphQL-URL>>",
+  })
+
+  return new ApolloClient({
+    link: httpLink,
+    cache: new InMemoryCache(),
+  })
+}
 
 ReactDOM.render(
-  <App />, 
+  <ApolloProvider client={createApolloClient()}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </ApolloProvider>,
   document.getElementById("root")
 )
 
