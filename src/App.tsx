@@ -1,8 +1,7 @@
 import React from "react";
 import "./App.css";
 import { Image } from "semantic-ui-react";
-import { Home } from "./components/home";
-import { Post } from "./components/post";
+import { AppHeader, Home, Post } from "./components";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 export function App() {
@@ -20,18 +19,13 @@ export function App() {
         </div>
       </div>
       <div className="App">
-        <div className="mt-4 mx-8">
-          <p>
-            Learn about building GraphQL apps with Slash GraphQL at
-            https://dgraph.io/learn
-          </p>
-          <BrowserRouter>
-            <Switch>
-              <Route exact path="/post/:id" component={Post} />
-              <Route exact path="/" component={Home} />
-            </Switch>
-          </BrowserRouter>
-        </div>
+        <BrowserRouter>
+          <AppHeader />
+          <Switch>
+            <Route exact path="/post/:id" component={Post} />
+            <Route exact path="/" component={Home} />
+          </Switch>
+        </BrowserRouter>
       </div>
     </>
   );

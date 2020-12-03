@@ -28,7 +28,8 @@
     "build": "yarn run build:css && react-scripts build",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/main.css",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate-types": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -46,6 +47,13 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/add": "^2.0.2",
+    "@graphql-codegen/cli": "^1.19.4",
+    "@graphql-codegen/named-operations-object": "^1.17.9",
+    "@graphql-codegen/near-operation-file-preset": "^1.17.13",
+    "@graphql-codegen/typescript": "^1.19.0",
+    "@graphql-codegen/typescript-operations": "^1.17.12",
+    "@graphql-codegen/typescript-react-apollo": "^2.2.1",
     "@types/luxon": "^1.24.1",
     "@types/node": "^12.0.0",
     "@types/react-router-dom": "^5.1.6",
