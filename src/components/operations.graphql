@@ -1,22 +1,26 @@
+fragment postData on Post {
+  id
+  title
+  text
+  tags
+  datePublished
+  category {
+    id
+    name
+  }
+  author {
+    username
+    displayName
+    avatarImg
+  }
+  commentsAggregate {
+    count
+  }
+}
+
 query allPosts {
   queryPost(order: { desc: datePublished }) {
-    id
-    title
-    text
-    tags
-    datePublished
-    category {
-      id
-      name
-    }
-    author {
-      username
-      displayName
-      avatarImg
-    }
-    commentsAggregate {
-      count
-    }
+    ...postData
   }
 }
 
@@ -55,6 +59,21 @@ query getPost($id: ID!) {
         displayName
         avatarImg
       }
+    }
+  }
+}
+
+query categories {
+  queryCategory {
+    id
+    name
+  }
+}
+
+mutation addPost($post: AddPostInput!) {
+  addPost(input: [$post]) {
+    post {
+      ...postData
     }
   }
 }

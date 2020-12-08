@@ -56,7 +56,7 @@ export function Post() {
 
   const comments = (
     <div className="mt-3">
-      {data.getPost.comments.map((comment) => {
+      {data.getPost.comments?.map((comment) => {
         return (
           <Comment.Group key={comment.id}>
             <Comment>
