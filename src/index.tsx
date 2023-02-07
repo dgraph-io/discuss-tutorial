@@ -14,7 +14,7 @@ import {
 
 const createApolloClient = () => {
   const httpLink = createHttpLink({
-    uri: "<<Slash-GraphQL-URL>>",
+    uri: "https://blue-surf-820037.us-east-1.aws.cloud.dgraph.io/graphql",
   })
 
   return new ApolloClient({

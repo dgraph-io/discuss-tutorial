@@ -11,8 +11,8 @@ export function App() {
         <div className="inline-flex">
           <span>
             Powered by{" "}
-            <a href="https://slash.dgraph.io" target="__blank">
-              <strong>Slash GraphQL</strong>
+            <a href="https://cloud.dgraph.io" target="__blank">
+              <strong>Dgraph Cloud</strong>
             </a>
           </span>
           <Image size="mini" src="/lighting.svg" className="lightning-logo" />

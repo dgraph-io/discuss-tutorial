@@ -2,6 +2,21 @@ import * as Types from '../../types/graphql';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+export type PostDataFragment = (
+  { __typename?: 'Post' }
+  & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
+  & { category: (
+    { __typename?: 'Category' }
+    & Pick<Types.Category, 'id' | 'name'>
+  ), author: (
+    { __typename?: 'User' }
+    & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
+  ), commentsAggregate?: Types.Maybe<(
+    { __typename?: 'CommentAggregateResult' }
+    & Pick<Types.CommentAggregateResult, 'count'>
+  )> }
+);
+
 export type AllPostsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -9,17 +24,7 @@ export type AllPostsQuery = (
   { __typename?: 'Query' }
   & { queryPost?: Types.Maybe<Array<Types.Maybe<(
     { __typename?: 'Post' }
-    & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
-    & { category: (
-      { __typename?: 'Category' }
-      & Pick<Types.Category, 'id' | 'name'>
-    ), author: (
-      { __typename?: 'User' }
-      & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-    ), commentsAggregate?: Types.Maybe<(
-      { __typename?: 'CommentAggregateResult' }
-      & Pick<Types.CommentAggregateResult, 'count'>
-    )> }
+    & PostDataFragment
   )>>> }
 );
 
@@ -39,24 +44,24 @@ export type GetPostQuery = (
     ), author: (
       { __typename?: 'User' }
       & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-    ), comments: Array<(
+    ), comments?: Types.Maybe<Array<(
       { __typename?: 'Comment' }
       & Pick<Types.Comment, 'id' | 'text'>
       & { commentsOn: (
         { __typename?: 'Post' }
-        & { comments: Array<(
+        & { comments?: Types.Maybe<Array<(
           { __typename?: 'Comment' }
           & Pick<Types.Comment, 'id' | 'text'>
           & { author: (
             { __typename?: 'User' }
             & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
           ) }
-        )> }
+        )>> }
       ), author: (
         { __typename?: 'User' }
         & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
       ) }
-    )> }
+    )>> }
   )> }
 );
 
@@ -82,35 +87,39 @@ export type AddPostMutation = (
     { __typename?: 'AddPostPayload' }
     & { post?: Types.Maybe<Array<Types.Maybe<(
       { __typename?: 'Post' }
-      & Pick<Types.Post, 'id'>
+      & PostDataFragment
     )>>> }
   )> }
 );
 
-
-export const AllPostsDocument = gql`
-    query allPosts {
-  queryPost(order: {desc: datePublished}) {
+export const PostDataFragmentDoc = gql`
+    fragment postData on Post {
+  id
+  title
+  text
+  tags
+  datePublished
+  category {
     id
-    title
-    text
-    tags
-    datePublished
-    category {
-      id
-      name
-    }
-    author {
-      username
-      displayName
-      avatarImg
-    }
-    commentsAggregate {
-      count
-    }
+    name
+  }
+  author {
+    username
+    displayName
+    avatarImg
+  }
+  commentsAggregate {
+    count
   }
 }
     `;
+export const AllPostsDocument = gql`
+    query allPosts {
+  queryPost(order: {desc: datePublished}) {
+    ...postData
+  }
+}
+    ${PostDataFragmentDoc}`;
 
 /**
  * __useAllPostsQuery__
@@ -239,11 +248,11 @@ export const AddPostDocument = gql`
     mutation addPost($post: AddPostInput!) {
   addPost(input: [$post]) {
     post {
-      id
+      ...postData
     }
   }
 }
-    `;
+    ${PostDataFragmentDoc}`;
 export type AddPostMutationFn = Apollo.MutationFunction<AddPostMutation, AddPostMutationVariables>;
 
 /**
@@ -277,5 +286,8 @@ export const namedOperations = {
   },
   Mutation: {
     addPost: 'addPost'
+  },
+  Fragment: {
+    postData: 'postData'
   }
 }
