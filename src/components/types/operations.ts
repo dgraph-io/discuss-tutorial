@@ -5,14 +5,20 @@ import * as ApolloReactCommon from '@apollo/client';
 import * as ApolloReactHooks from '@apollo/client';
 export type PostDataFragment = (
   { __typename?: 'Post' }
-  & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished' | 'likes'>
+  & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
   & { category: (
     { __typename?: 'Category' }
     & Pick<Types.Category, 'id' | 'name'>
   ), author: (
     { __typename?: 'User' }
     & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-  ), comments: Array<(
+  ), upvotes: Array<(
+    { __typename?: 'User' }
+    & Pick<Types.User, 'username'>
+  )>, downvotes: Array<(
+    { __typename?: 'User' }
+    & Pick<Types.User, 'username'>
+  )>, comments: Array<(
     { __typename?: 'Comment' }
     & Pick<Types.Comment, 'id' | 'text'>
     & { commentsOn: (
@@ -68,14 +74,20 @@ export type FilterPostsQuery = (
   { __typename?: 'Query' }
   & { queryPost?: Types.Maybe<Array<Types.Maybe<(
     { __typename?: 'Post' }
-    & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished' | 'likes'>
+    & Pick<Types.Post, 'id' | 'title' | 'text' | 'tags' | 'datePublished'>
     & { category: (
       { __typename?: 'Category' }
       & Pick<Types.Category, 'id' | 'name'>
     ), author: (
       { __typename?: 'User' }
       & Pick<Types.User, 'username' | 'displayName' | 'avatarImg'>
-    ), comments: Array<(
+    ), upvotes: Array<(
+      { __typename?: 'User' }
+      & Pick<Types.User, 'username'>
+    )>, downvotes: Array<(
+      { __typename?: 'User' }
+      & Pick<Types.User, 'username'>
+    )>, comments: Array<(
       { __typename?: 'Comment' }
       & Pick<Types.Comment, 'id' | 'text'>
       & { commentsOn: (
@@ -187,6 +199,7 @@ export type AddCommentMutation = (
 export type UpdateUserMutationVariables = Types.Exact<{
   username: Types.Scalars['String'];
   user?: Types.Maybe<Types.UserPatch>;
+  userremove?: Types.Maybe<Types.UserPatch>;
 }>;
 
 
@@ -203,7 +216,8 @@ export type UpdateUserMutation = (
 
 export type UpdatePostMutationVariables = Types.Exact<{
   id: Types.Scalars['ID'];
-  post?: Types.Maybe<Types.PostPatch>;
+  postset?: Types.Maybe<Types.PostPatch>;
+  postremove?: Types.Maybe<Types.PostPatch>;
 }>;
 
 
@@ -218,6 +232,23 @@ export type UpdatePostMutation = (
   )> }
 );
 
+export type SubCommentSubscriptionVariables = Types.Exact<{
+  id: Types.Scalars['ID'];
+}>;
+
+
+export type SubCommentSubscription = (
+  { __typename?: 'Subscription' }
+  & { queryComment?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'Comment' }
+    & Pick<Types.Comment, 'text' | 'id'>
+    & { commentsOn: (
+      { __typename?: 'Post' }
+      & Pick<Types.Post, 'text'>
+    ) }
+  )>>> }
+);
+
 export const PostDataFragmentDoc = gql`
     fragment postData on Post {
   id
@@ -225,7 +256,6 @@ export const PostDataFragmentDoc = gql`
   text
   tags
   datePublished
-  likes
   category {
     id
     name
@@ -234,6 +264,12 @@ export const PostDataFragmentDoc = gql`
     username
     displayName
     avatarImg
+  }
+  upvotes {
+    username
+  }
+  downvotes {
+    username
   }
   comments {
     id
@@ -332,7 +368,6 @@ export const FilterPostsDocument = gql`
     text
     tags
     datePublished
-    likes
     category(filter: {id: $categoryID}) {
       id
       name
@@ -341,6 +376,12 @@ export const FilterPostsDocument = gql`
       username
       displayName
       avatarImg
+    }
+    upvotes {
+      username
+    }
+    downvotes {
+      username
     }
     comments {
       id
@@ -581,8 +622,8 @@ export type AddCommentMutationHookResult = ReturnType<typeof useAddCommentMutati
 export type AddCommentMutationResult = ApolloReactCommon.MutationResult<AddCommentMutation>;
 export type AddCommentMutationOptions = ApolloReactCommon.BaseMutationOptions<AddCommentMutation, AddCommentMutationVariables>;
 export const UpdateUserDocument = gql`
-    mutation updateUser($username: String!, $user: UserPatch) {
-  updateUser(input: {filter: {username: {eq: $username}}, set: $user}) {
+    mutation updateUser($username: String!, $user: UserPatch, $userremove: UserPatch) {
+  updateUser(input: {filter: {username: {eq: $username}}, set: $user, remove: $userremove}) {
     user {
       displayName
       avatarImg
@@ -607,6 +648,7 @@ export type UpdateUserMutationFn = ApolloReactCommon.MutationFunction<UpdateUser
  *   variables: {
  *      username: // value for 'username'
  *      user: // value for 'user'
+ *      userremove: // value for 'userremove'
  *   },
  * });
  */
@@ -617,8 +659,8 @@ export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutati
 export type UpdateUserMutationResult = ApolloReactCommon.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const UpdatePostDocument = gql`
-    mutation updatePost($id: ID!, $post: PostPatch) {
-  updatePost(input: {filter: {id: [$id]}, set: $post}) {
+    mutation updatePost($id: ID!, $postset: PostPatch, $postremove: PostPatch) {
+  updatePost(input: {filter: {id: [$id]}, set: $postset, remove: $postremove}) {
     post {
       ...postData
     }
@@ -641,7 +683,8 @@ export type UpdatePostMutationFn = ApolloReactCommon.MutationFunction<UpdatePost
  * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
  *   variables: {
  *      id: // value for 'id'
- *      post: // value for 'post'
+ *      postset: // value for 'postset'
+ *      postremove: // value for 'postremove'
  *   },
  * });
  */
@@ -651,6 +694,39 @@ export function useUpdatePostMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = ApolloReactCommon.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const SubCommentDocument = gql`
+    subscription subComment($id: ID!) {
+  queryComment @cascade {
+    text
+    id
+    commentsOn(filter: {id: [$id]}) {
+      text
+    }
+  }
+}
+    `;
+
+/**
+ * __useSubCommentSubscription__
+ *
+ * To run a query within a React component, call `useSubCommentSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useSubCommentSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSubCommentSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSubCommentSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<SubCommentSubscription, SubCommentSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<SubCommentSubscription, SubCommentSubscriptionVariables>(SubCommentDocument, baseOptions);
+      }
+export type SubCommentSubscriptionHookResult = ReturnType<typeof useSubCommentSubscription>;
+export type SubCommentSubscriptionResult = ApolloReactCommon.SubscriptionResult<SubCommentSubscription>;
 export const namedOperations = {
   Query: {
     allPosts: 'allPosts',
@@ -665,6 +741,9 @@ export const namedOperations = {
     addComment: 'addComment',
     updateUser: 'updateUser',
     updatePost: 'updatePost'
+  },
+  Subscription: {
+    subComment: 'subComment'
   },
   Fragment: {
     postData: 'postData'

@@ -13,8 +13,10 @@ type User
   username: String! @id
   displayName: String
   avatarImg: String
-  posts: [Post] @hasInverse(field: author)
   roles: [Permission] @hasInverse(field: user)
+  posts: [Post!] @hasInverse(field: author)
+  upvoted: [Post!] @hasInverse(field: upvotes)
+  downvoted: [Post!] @hasInverse(field: downvotes)
 }
 
 type Permission
@@ -88,15 +90,15 @@ type Post
   title: String! @search(by: [term])
   text: String! @search(by: [fulltext])
   datePublished: DateTime
-  likes: Int
+  upvotes: [User!]!
+  downvotes: [User!]!
   author: User!
   tags: String @search(by: [term])
   category: Category! @hasInverse(field: posts)
   comments: [Comment!]!
 }
 
-type Comment
-@auth(
+type Comment @withSubscription @auth(
   query: {
     or: [
       { rule: "<<you-have-any-permission-for-comments-category>>" }

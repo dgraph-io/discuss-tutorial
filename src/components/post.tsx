@@ -13,6 +13,7 @@ import {
   Button,
   TextAreaProps,
   Comment,
+  Message,
 } from "semantic-ui-react";
 import {
   useGetPostQuery,
@@ -20,6 +21,8 @@ import {
   useUpdatePostMutation,
   useGetUserQuery,
   namedOperations,
+  useUpdateUserMutation,
+  useSubCommentSubscription,
 } from "./types/operations";
 import { DateTime } from "luxon";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -38,9 +41,16 @@ export function Post() {
   const { data: currentUser, loading: userLoading } = useGetUserQuery({
     variables: { username: isAuthenticated ? user.sub : "" },
   });
-  const { data, loading, error } = useGetPostQuery({
+  const { data, loading, error, refetch } = useGetPostQuery({
     variables: { id: id },
   });
+  const {
+    data: newComments,
+    loading: newCommentsLoading,
+  } = useSubCommentSubscription({
+    variables: { id: id },
+  });
+
   const {
     allWriteableCategories,
     loading: catLoading,
@@ -53,6 +63,9 @@ export function Post() {
   const [updatePostMutation] = useUpdatePostMutation({
     refetchQueries: [namedOperations.Query.getPost],
   });
+  const [updateUserMutation] = useUpdateUserMutation({
+    refetchQueries: [namedOperations.Query.getPost],
+  });
 
   const [title, setTitle] = useState("");
   const [tags, setTags]: any = useState("");
@@ -61,7 +74,8 @@ export function Post() {
   const [editPost, setEditPost] = useState(false);
   const [commentText, setCommentText] = useState("");
 
-  if (loading || userLoading || catLoading) return <Loader active />;
+  if (loading || userLoading || catLoading || newCommentsLoading)
+    return <Loader active />;
   if (error) {
     return (
       <Container text className="mt-24">
@@ -87,8 +101,19 @@ export function Post() {
       </Container>
     );
   }
+  const newCmts = newComments?.queryComment ? newComments.queryComment : [];
+  const notificationComments =
+    newCmts.length > data.getPost.comments.length
+      ? newCmts.length - data.getPost.comments.length
+      : false;
 
   const canEditThisPost = data.getPost.author.username === user?.email;
+  const hasUpvoted = !!data.getPost?.upvotes.find(
+    (user) => user.username === currentUser?.getUser?.username
+  );
+  const hasDownvoted = !!data.getPost?.downvotes.find(
+    (user) => user.username === currentUser?.getUser?.username
+  );
   const canPostComments =
     isAuthenticated &&
     !!allWriteableCategories.find((c) => c?.id === data.getPost?.category.id);
@@ -126,9 +151,12 @@ export function Post() {
       DateTime.fromISO(data.getPost.datePublished).toRelative() ?? dateStr;
   }
 
-  const paras = data.getPost.text
-    .split("\n")
-    .map((str) => <p key={str}>{str}<br /></p>);
+  const paras = data.getPost.text.split("\n").map((str) => (
+    <p key={str}>
+      {str}
+      <br />
+    </p>
+  ));
 
   const updatePost = () => {
     setEditPost(false);
@@ -136,11 +164,40 @@ export function Post() {
       text: text,
       title: title,
       tags: tags,
-      // likes: 0,
       category: { id: category },
     };
 
-    updatePostMutation({ variables: { post: post, id: id } });
+    updatePostMutation({ variables: { postset: post, id: id } });
+  };
+
+  const updateUpVote = () => {
+    const userset = {
+      upvoted: [{ id: id }],
+    };
+    const userremove = {
+      downvoted: [{ id: id }],
+    };
+    const varibles = {
+      username: currentUser?.getUser ? currentUser.getUser.username : "",
+      user: userset,
+      userremove: userremove,
+    };
+    updateUserMutation({ variables: varibles });
+  };
+
+  const updateDownVote = () => {
+    const userset = {
+      downvoted: [{ id: id }],
+    };
+    const userremove = {
+      upvoted: [{ id: id }],
+    };
+    const varibles = {
+      username: currentUser?.getUser ? currentUser.getUser.username : "",
+      user: userset,
+      userremove: userremove,
+    };
+    updateUserMutation({ variables: varibles });
   };
 
   const showEditPost = (
@@ -233,6 +290,11 @@ export function Post() {
 
   return (
     <div className="layout-margin">
+      {notificationComments && (
+        <Message className="cursor-pointer" onClick={() => refetch()}>
+          {notificationComments} New comments{" "}
+        </Message>
+      )}
       <div>
         <Header as="h1">{data.getPost.title} </Header>
         <span className="ui red empty mini circular label"></span>
@@ -262,6 +324,34 @@ export function Post() {
         </Header.Content>
       </Header>
       {paras}
+      {isAuthenticated && (
+        <div className="mt-4 mb-4">
+          <span className="mr-4">
+            {hasUpvoted ? (
+              <i className="large thumbs up icon"></i>
+            ) : (
+              <i
+                className="large thumbs up outline icon cursor-pointer"
+                onClick={updateUpVote}
+              ></i>
+            )}
+            {data.getPost.upvotes.length} Upvote
+            {data.getPost.upvotes.length > 1 ? "s" : ""}
+          </span>
+          <span>
+            {hasDownvoted ? (
+              <i className="large thumbs down icon"></i>
+            ) : (
+              <i
+                className="large thumbs down outline icon cursor-pointer"
+                onClick={updateDownVote}
+              ></i>
+            )}
+            {data.getPost.downvotes.length} Downvote
+            {data.getPost.downvotes.length > 1 ? "s" : ""}
+          </span>
+        </div>
+      )}
       {showEditPost}
       {canEditThisPost && (
         <div className="mt-4">
