@@ -1,0 +1,7 @@
+{ 
+    "AUTH0_APP" :"DgraphDiscuss",
+    "AUTH0_DOMAIN" : "dev-1iox4gs8pkgudwcm.us.auth0.com",
+  "AUTH0_CLIENT_ID" :"OcpvWhd63gHhx3dBVbIU8TJLe5CgUTEZ",
+  "AUTH0_CLIENT_SECRET" :"pI46t5pJ6Yh1WPfLQzSjBzM2hcJU_gaVA0gFixWokv8Wd8YgnAHNPCrqIidi3w06",
+  "AUTH0_CUSTOM_CLAIMS" :"https://dgraph.io/jwt/claims"
+}

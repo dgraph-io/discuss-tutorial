@@ -3,10 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< Updated upstream
     "@apollo/client": "^3.2.9",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+=======
+    "@apollo/client": "^3.7.7",
+    "@auth0/auth0-react": "^2.0.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+>>>>>>> Stashed changes
     "@types/jest": "^24.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
@@ -18,9 +26,9 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2",
+    "semantic-ui-react": "^2.1.4",
     "tailwindcss": "^1.8.5",
-    "typescript": "~3.7.2",
+    "typescript": "^4.9.5",
     "yarn": "^1.22.5"
   },
   "scripts": {
@@ -47,6 +55,7 @@
     ]
   },
   "devDependencies": {
+<<<<<<< Updated upstream
     "@graphql-codegen/add": "^2.0.2",
     "@graphql-codegen/cli": "^1.19.4",
     "@graphql-codegen/named-operations-object": "^1.17.9",
@@ -54,6 +63,16 @@
     "@graphql-codegen/typescript": "^1.19.0",
     "@graphql-codegen/typescript-operations": "^1.17.12",
     "@graphql-codegen/typescript-react-apollo": "^2.2.1",
+=======
+    "@graphql-codegen/add": "^4.0.0",
+    "@graphql-codegen/cli": "^3.0.0",
+    "@graphql-codegen/named-operations-object": "^1.17.8",
+    "@graphql-codegen/near-operation-file-preset": "^1.15.4",
+    "@graphql-codegen/typescript": "^1.15.4",
+    "@graphql-codegen/typescript-operations": "^1.15.4",
+    "@graphql-codegen/typescript-react-apollo": "^1.15.4",
+    "@types/faker": "^4.1.12",
+>>>>>>> Stashed changes
     "@types/luxon": "^1.24.1",
     "@types/node": "^12.0.0",
     "@types/react-router-dom": "^5.1.6",
