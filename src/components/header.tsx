@@ -15,6 +15,7 @@ import {
   useUpdateUserMutation,
   useAddPostMutation,
   AllPostsDocument,
+  useCategoriesQuery,
   AllPostsQuery,
   namedOperations,
   useQueryPermissionQuery,
@@ -42,8 +43,14 @@ export function AppHeader() {
     getIdTokenClaims,
   } = useAuth0();
 
+  const {
+    data: categoriesData,
+    loading: categoriesLoading,
+    error: categoriesError,
+  } = useCategoriesQuery()
+
   const { data, loading, error } = useGetUserQuery({
-    variables: { username: isAuthenticated ? user.sub : "" },
+    variables: { username: isAuthenticated ? String(user?.sub) : "" },
   });
   const {
     data: perm,
@@ -99,7 +106,7 @@ export function AppHeader() {
   const currentSettings = () => {
     const permData = perm?.queryPermission;
     permData?.forEach(async (perm) => {
-      if (perm?.user.username === user.sub) {
+      if (perm?.user.username === user?.sub) {
         setAdminStatus(true);
         const token = isAuthenticated ? await getIdTokenClaims() : "";
         const tokenVal = token ? token.__raw : "";
@@ -112,7 +119,7 @@ export function AppHeader() {
     setAvatarImg(
       data?.getUser?.avatarImg ? data.getUser.avatarImg : "/" + avatar + ".svg"
     );
-    setCurrentUser(user.sub);
+    setCurrentUser(user ? String(user.sub) : "");
   };
 
   const submitSettings = () => {
@@ -138,7 +145,7 @@ export function AppHeader() {
       title: title,
       tags: tags,
       category: { id: category },
-      author: { username: user.sub },
+      author: { username: user?.sub },
       datePublished: new Date().toISOString(),
       comments: [],
       upvotes: [],
@@ -307,12 +314,30 @@ export function AppHeader() {
       </Button>
     </span>
   );
+ 
 
+  const addPostButton = () => {
+    if (categoriesLoading) {
+      return <Loader active />
+    } else if (categoriesError) {
+      return <div>`Error! ${categoriesError.message}`</div>
+    } else {
+      return (
+        <Button className="dgraph-btn mr-1" onClick={() => setCreatePost(true)}>
+          Create Post
+        </Button>
+      )
+    }
+  }
   return (
     <>
       {showSettings}
+      <p>{isAuthenticated}</p>
       {showCreatePost}
       <div className="ui clearing segment header-seg">
+        <h3 className="ui right floated header header-seg-right">
+          <span>{addPostButton()}</span>
+        </h3>
         <h3 className="ui right floated header header-seg-right">{userItem}</h3>
         <h3 className="ui left floated header header-seg-left">
           <Link to="/">

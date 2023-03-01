@@ -17,8 +17,10 @@ import { setContext } from "@apollo/client/link/context";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { WebSocketLink } from "@apollo/client/link/ws";
-
-const AuthorizedApolloProvider: React.FC = ({ children }) => {
+type Props = {
+  children: JSX.Element
+};
+const AuthorizedApolloProvider: React.FC<Props> = ({ children }) => {
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
 
   const httpLink = createHttpLink({
