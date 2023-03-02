@@ -1,15 +1,15 @@
 {
     "Dgraph_Authorization": {
         "Header": "Authorization",
-        "Namespace": "https://slash.discuss.io/claims",
+        "Namespace": "https://dgraph.io/jwt/claims",
         "Algo": "RS256",
         "Audience": [
-            "T14LbWbDLrwetYY8zk5HRJHBfZ35SWkZ",
-            "https://slash-discuss-dev.us.auth0.com/api/v2/"
+            "aqk1CSVtliyoXUfLaaLKSKUtkaIel6Vd",
+            "https://dev-5q3n8cc7nckhu5w8.us.auth0.com/api/v2/"
         ]
     },
     "jwksClient": {
-        "jwksUri": "https://slash-discuss-dev.us.auth0.com/.well-known/jwks.json",
-        "kid": "kQdulR2p958xQ9UNdoTia"
+        "jwksUri": "https://dev-5q3n8cc7nckhu5w8.us.auth0.com/.well-known/jwks.json",
+        "kid": "0kGakzg0UTq3qi4HzjMEA"
     }
 }

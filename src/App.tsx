@@ -12,7 +12,7 @@ export function App() {
           <span>
             Powered by{" "}
             <a href="https://slash.dgraph.io" target="__blank">
-              <strong>Slash GraphQL</strong>
+              <strong>Dgraph Cloud & GraphQL</strong>
             </a>
           </span>
           <Image size="mini" src="/lighting.svg" className="lightning-logo" />
