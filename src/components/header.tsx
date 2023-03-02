@@ -15,7 +15,6 @@ import {
   useUpdateUserMutation,
   useAddPostMutation,
   AllPostsDocument,
-  useCategoriesQuery,
   AllPostsQuery,
   namedOperations,
   useQueryPermissionQuery,
@@ -43,11 +42,7 @@ export function AppHeader() {
     getIdTokenClaims,
   } = useAuth0();
 
-  const {
-    data: categoriesData,
-    loading: categoriesLoading,
-    error: categoriesError,
-  } = useCategoriesQuery()
+
 
   const { data, loading, error } = useGetUserQuery({
     variables: { username: isAuthenticated ? String(user?.sub) : "" },
@@ -132,7 +127,8 @@ export function AppHeader() {
     });
   };
 
-  const canAddPosts = isAuthenticated && allWriteableCategories.length > 0;
+ // const canAddPosts = isAuthenticated && allWriteableCategories.length > 0;
+  const canAddPosts = true;
 
   const writableCategoriesOptions = allWriteableCategories.map((category) => {
     return { key: category?.id, text: category?.name, value: category?.id };
@@ -316,28 +312,11 @@ export function AppHeader() {
   );
  
 
-  const addPostButton = () => {
-    if (categoriesLoading) {
-      return <Loader active />
-    } else if (categoriesError) {
-      return <div>`Error! ${categoriesError.message}`</div>
-    } else {
-      return (
-        <Button className="dgraph-btn mr-1" onClick={() => setCreatePost(true)}>
-          Create Post
-        </Button>
-      )
-    }
-  }
   return (
     <>
       {showSettings}
-      <p>{isAuthenticated}</p>
       {showCreatePost}
       <div className="ui clearing segment header-seg">
-        <h3 className="ui right floated header header-seg-right">
-          <span>{addPostButton()}</span>
-        </h3>
         <h3 className="ui right floated header header-seg-right">{userItem}</h3>
         <h3 className="ui left floated header header-seg-left">
           <Link to="/">
