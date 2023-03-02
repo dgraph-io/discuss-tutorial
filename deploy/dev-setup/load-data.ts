@@ -1,5 +1,5 @@
 import fetch from "cross-fetch"
-import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client"
+import { ApolloClient, ApolloLink, InMemoryCache, HttpLink , concat} from "@apollo/client"
 import { GraphQLError } from "graphql"
 import {
   AddCategoryInput,
@@ -28,17 +28,26 @@ import { lorem, name } from "faker"
 // yarn run --prod load-data
 const env = process.env.NODE_ENV ?? "development"
 require("dotenv").config({ path: ".env." + env })
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: process.env.GRAPHQL_ADMIN_JWT,
+    }
+  });
 
+  return forward(operation);
+})
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink({
+  link: concat(authMiddleware, new HttpLink({
     uri: process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT + "/graphql",
     fetch: fetch,
-  }),
+  })),
 })
 
 const diggy: AddUserInput = {
-  username: "auth0|5f5868052d157e006ae52ae0",
+  username: "auth0|63fe77f32cef38f4fa3dab34",
   displayName: "Diggy",
   avatarImg: "/diggy.png",
   roles: [{ role: Role.Administrator }],
@@ -219,7 +228,8 @@ async function installData(): Promise<Readonly<GraphQLError[]> | undefined> {
   })
 
   if (diggyErrors || !diggyData?.addUser?.user) {
-    return diggyErrors
+    console.log(`Error ${diggyErrors?.toString()} ${JSON.stringify(diggyData)}`)
+  //  return diggyErrors
   }
 
   console.log(`added Diggy`)
@@ -259,6 +269,7 @@ async function installData(): Promise<Readonly<GraphQLError[]> | undefined> {
   })
 
   if (postsErrors || !postsData?.addPost?.post) {
+    console.log(`posts  ${postsErrors}  ${JSON.stringify(postsData)}`)
     return postsErrors
   }
 

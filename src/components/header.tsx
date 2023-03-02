@@ -42,8 +42,10 @@ export function AppHeader() {
     getIdTokenClaims,
   } = useAuth0();
 
+
+
   const { data, loading, error } = useGetUserQuery({
-    variables: { username: isAuthenticated ? user.sub : "" },
+    variables: { username: isAuthenticated ? String(user?.sub) : "" },
   });
   const {
     data: perm,
@@ -99,7 +101,7 @@ export function AppHeader() {
   const currentSettings = () => {
     const permData = perm?.queryPermission;
     permData?.forEach(async (perm) => {
-      if (perm?.user.username === user.sub) {
+      if (perm?.user.username === user?.sub) {
         setAdminStatus(true);
         const token = isAuthenticated ? await getIdTokenClaims() : "";
         const tokenVal = token ? token.__raw : "";
@@ -112,7 +114,7 @@ export function AppHeader() {
     setAvatarImg(
       data?.getUser?.avatarImg ? data.getUser.avatarImg : "/" + avatar + ".svg"
     );
-    setCurrentUser(user.sub);
+    setCurrentUser(user ? String(user.sub) : "");
   };
 
   const submitSettings = () => {
@@ -125,7 +127,8 @@ export function AppHeader() {
     });
   };
 
-  const canAddPosts = isAuthenticated && allWriteableCategories.length > 0;
+ // const canAddPosts = isAuthenticated && allWriteableCategories.length > 0;
+  const canAddPosts = true;
 
   const writableCategoriesOptions = allWriteableCategories.map((category) => {
     return { key: category?.id, text: category?.name, value: category?.id };
@@ -138,7 +141,7 @@ export function AppHeader() {
       title: title,
       tags: tags,
       category: { id: category },
-      author: { username: user.sub },
+      author: { username: user?.sub },
       datePublished: new Date().toISOString(),
       comments: [],
       upvotes: [],
@@ -307,6 +310,7 @@ export function AppHeader() {
       </Button>
     </span>
   );
+ 
 
   return (
     <>

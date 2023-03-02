@@ -103,8 +103,9 @@ function rules(management, config) {
 }
 
 var config = JSON.parse(readFileSync(dir + "/" + configFile, "utf8"))
-config.SLASH_GRAPHQL_ENDPOINT = process.env.REACT_APP_SLASH_GRAPHQL_ENDPOINT
+config.AUTH0_CLIENT_SECRET = process.env.AUTH0_CLIENT_SECRET
 
+console.log("clientSecret " + config.AUTH0_CLIENT_SECRET)
 var management = new ManagementClient({
   domain: config.AUTH0_DOMAIN,
   clientId: config.AUTH0_CLIENT_ID,
